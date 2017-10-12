@@ -32,7 +32,11 @@
         var rows = tbody.selectAll("tr.row")
           .data(data)
           .enter()
-          .append("tr").attr("class", "row");
+          .append("tr").attr("class", "row")
+		  .style("background-color", 
+				 function(d, i){
+						return i%2 == 0 ? "#D8D8D8" : "white";
+				 });
 		  
 		var formatComma = d3.format(","),
 			formatDecimal = d3.format(".1f"), 
@@ -64,7 +68,9 @@
           }).on("mouseout", function() {
 
             tbody.selectAll("tr")
-              .style("background-color", null)
+              .style("background-color", function(d, i){
+	     					return i%2 == 0 ? "#D8D8D8" : "white";
+					})
               .selectAll("td")
               .style("background-color", null);
 
