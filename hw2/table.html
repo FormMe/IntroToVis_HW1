@@ -7,6 +7,7 @@
 
       d3.json("https://raw.githubusercontent.com/avt00/dvcourse/master/countries_2012.json", function(error, data){
         
+		var columnsToDisplay = ["name", "continent", "gdp", "life_expectancy", "population",  "year"]
         var columns = Object.keys(data[0]);
 
         var table = d3.select("body").append("table"),
@@ -18,7 +19,7 @@
           .html("World Countries Ranking");
 
         thead.append("tr").selectAll("th")
-          .data(columns)
+          .data(columnsToDisplay)
         .enter()
           .append("th")
           .text(function(d) { return d; })
@@ -34,10 +35,10 @@
           .append("tr").attr("class", "row");
 
         var cells = rows.selectAll("td")
-          .data(function(row) {
-              return d3.range(Object.keys(row).length).map(function(column, i) {
-                  return row[Object.keys(row)[i]];
-              });
+          .data(function(row) {		  
+			  return columnsToDisplay.map(function(column) {
+				  return row[column];
+				  });              
           })
           .enter()
           .append("td")
