@@ -5,9 +5,9 @@
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <script>
 
-      d3.json("countries_2012.json", function(error, data){
+      d3.json("https://raw.githubusercontent.com/avt00/dvcourse/master/countries_2012.json", function(error, data){
         
-        var columns = Object.keys(data.data[0]);
+        var columns = Object.keys(data[0]);
 
         var table = d3.select("body").append("table"),
           thead = table.append("thead")
@@ -29,7 +29,7 @@
           });
 
         var rows = tbody.selectAll("tr.row")
-          .data(data.data)
+          .data(data)
           .enter()
           .append("tr").attr("class", "row");
 
