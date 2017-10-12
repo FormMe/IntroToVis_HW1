@@ -3,17 +3,23 @@
 <meta charset="utf-8">
   <body>
     <script src="https://d3js.org/d3.v3.min.js"></script>
-	<label>Americas<input type="checkbox" name="Americas" value="Americas" title="Americas" onchange="alert('changed!')"></input></label>
-	<label>Africa<input type="checkbox" name="Africa" value="Africa" title="Africa" onchange="alert('changed!')"></input></label>
-	<label>Asia<input type="checkbox" name="Asia" value="Asia" title="Asia" onchange="alert('changed!')"></input></label>
-	<label>Occeania<input type="checkbox" name="Occeania" value="Occeania" title="Occeania" onchange="alert('changed!')"></input></label>
-	<label>Europe<input type="checkbox" name="Europe" value="Europe" title="Europe" onchange="alert('changed!')"></input></label>
-    <script>
-
+	<label><input type="checkbox" name="Americas" value="Americas" title="Americas" onchange="render()" checked></input>Americas</label>
+	<label><input type="checkbox" name="Africa" value="Africa" title="Africa" onchange="render()" checked></input>Africa</label>
+	<label><input type="checkbox" name="Asia" value="Asia" title="Asia" onchange="render()"></input>Asia</label>
+	<label><input type="checkbox" name="Occeania" value="Occeania" title="Occeania" onchange="render()"></input>Occeania</label>
+	<label><input type="checkbox" name="Europe" value="Europe" title="Europe" onchange="render()"></input>Europe</label>
+    <br/>
+	<p>Aggregation: </p>
+	<label><input type="radio" name="Continent" value="Continent" onclick="">by Continent</label>
+	<label><input type="radio" name="None" value="None" onclick="">None</label>
+	
+	<script>
+		
+		
       d3.json("https://raw.githubusercontent.com/avt00/dvcourse/master/countries_2012.json", function(error, data){
         
 		var columnsToDisplay = ["name", "continent", "gdp", "life_expectancy", "population",  "year"]
-        var columns = Object.keys(data[0]);
+        //var columns = Object.keys(data[0]);
 
         var table = d3.select("body").append("table"),
           thead = table.append("thead")
@@ -29,19 +35,32 @@
           .append("th")
           .text(function(d) { return d; })
           .on("click", function(header, i) {
-            tbody.selectAll("tr").sort(function(a, b) {
-              return d3.descending(a[header], b[header]) || d3.ascending(a["name"], b["name"]);
-            });
-			rows.style("background-color", 
+            tbody.selectAll("tr")
+				 .sort(function(a, b) {
+						  return d3.descending(a[header], b[header]) || d3.ascending(a["name"], b["name"]);
+						})
+			     .style("background-color", 
 				 function(d, i){
 						return i%2 == 0 ? "#D8D8D8" : "white";
-				 }).enter();
+				 });
           });
-
+			
+		
         var rows = tbody.selectAll("tr.row")
           .data(data)
           .enter()
           .append("tr").attr("class", "row")
+		  .filter(function(d){
+					var selectedContinents = [];
+					d3.selectAll("input:checked")
+					  .each(function(d){ selectedContinents.push(d3.select(this).attr("name"));});
+					if(selectedContinents.lenght == 0){
+						return true;
+					}
+					return selectedContinents.includes(d.continent);		
+					/*console.log(d["continent"], d["continent"] == "Europe");
+					return d["continent"] == "Europe";*/
+					})
 		  .style("background-color", 
 				 function(d, i){
 						return i%2 == 0 ? "#D8D8D8" : "white";
@@ -49,19 +68,19 @@
 		  
 		var formatComma = d3.format(","),
 			formatDecimal = d3.format(".1f"), 
-			formatSuffixDecimal2 = d3.format("$.3s");
+			formatSI = d3.format(".3s");
 			
         var cells = rows.selectAll("td")
           .data(function(row) {		  
 			  return columnsToDisplay.map(function(column) {
-					if(column === "gdp"){
-						return formatSuffixDecimal2(row[column])
+					if(column == "gdp"){
+						return formatSI(row[column]);
 					}
-					if(column === "life_expectancy"){
-						return formatDecimal(row[column])
+					if(column == "life_expectancy"){
+						return formatDecimal(row[column]);
 					}
-					if(column === "population"){
-						return formatComma(row[column])
+					if(column == "population"){
+						return formatComma(row[column]);
 					}
 				  return row[column];
 				  });              
@@ -82,10 +101,23 @@
 					})
               .selectAll("td")
               .style("background-color", null);
-
+			
           });
+		  
+		  rows = rows.enter().filter(function(d){
+					var selectedContinents = [];
+					d3.selectAll("input:checked")
+					  .each(function(d){ selectedContinents.push(d3.select(this).attr("name"));});
+					if(selectedContinents.lenght == 0){
+						return true;
+					}
+					return selectedContinents.includes(d.continent);		
+					/*console.log(d["continent"], d["continent"] == "Europe");
+					return d["continent"] == "Europe";*/
+					})
 
       });
+	  
     </script> 
   </body>
 </html>
