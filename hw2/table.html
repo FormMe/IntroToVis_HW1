@@ -3,6 +3,11 @@
 <meta charset="utf-8">
   <body>
     <script src="https://d3js.org/d3.v3.min.js"></script>
+	<label>Americas<input type="checkbox" name="Americas" value="Americas" title="Americas" onchange="alert('changed!')"></input></label>
+	<label>Africa<input type="checkbox" name="Africa" value="Africa" title="Africa" onchange="alert('changed!')"></input></label>
+	<label>Asia<input type="checkbox" name="Asia" value="Asia" title="Asia" onchange="alert('changed!')"></input></label>
+	<label>Occeania<input type="checkbox" name="Occeania" value="Occeania" title="Occeania" onchange="alert('changed!')"></input></label>
+	<label>Europe<input type="checkbox" name="Europe" value="Europe" title="Europe" onchange="alert('changed!')"></input></label>
     <script>
 
       d3.json("https://raw.githubusercontent.com/avt00/dvcourse/master/countries_2012.json", function(error, data){
@@ -25,8 +30,12 @@
           .text(function(d) { return d; })
           .on("click", function(header, i) {
             tbody.selectAll("tr").sort(function(a, b) {
-              return d3.descending(a[header], b[header]);
+              return d3.descending(a[header], b[header]) || d3.ascending(a["name"], b["name"]);
             });
+			rows.style("background-color", 
+				 function(d, i){
+						return i%2 == 0 ? "#D8D8D8" : "white";
+				 }).enter();
           });
 
         var rows = tbody.selectAll("tr.row")
