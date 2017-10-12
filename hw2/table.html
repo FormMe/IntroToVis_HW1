@@ -33,10 +33,23 @@
           .data(data)
           .enter()
           .append("tr").attr("class", "row");
-
+		  
+		var formatComma = d3.format(","),
+			formatDecimal = d3.format(".1f"), 
+			formatSuffixDecimal2 = d3.format("$.3s");
+			
         var cells = rows.selectAll("td")
           .data(function(row) {		  
 			  return columnsToDisplay.map(function(column) {
+					if(column === "gdp"){
+						return formatSuffixDecimal2(row[column])
+					}
+					if(column === "life_expectancy"){
+						return formatDecimal(row[column])
+					}
+					if(column === "population"){
+						return formatComma(row[column])
+					}
 				  return row[column];
 				  });              
           })
