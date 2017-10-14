@@ -3,11 +3,11 @@
 <meta charset="utf-8">
   <body>
     <script src="https://d3js.org/d3.v3.min.js"></script>
-	<label><input type="checkbox" name="Americas" value="Americas" title="Americas" onchange="render()" checked></input>Americas</label>
-	<label><input type="checkbox" name="Africa" value="Africa" title="Africa" onchange="render()" checked></input>Africa</label>
-	<label><input type="checkbox" name="Asia" value="Asia" title="Asia" onchange="render()"></input>Asia</label>
-	<label><input type="checkbox" name="Occeania" value="Occeania" title="Occeania" onchange="render()"></input>Occeania</label>
-	<label><input type="checkbox" name="Europe" value="Europe" title="Europe" onchange="render()"></input>Europe</label>
+	<label><input type="checkbox" name="Americas" value="Americas" title="Americas" ></input>Americas</label>
+	<label><input type="checkbox" name="Africa" value="Africa" title="Africa"></input>Africa</label>
+	<label><input type="checkbox" name="Asia" value="Asia" title="Asia" ></input>Asia</label>
+	<label><input type="checkbox" name="Oceania" value="Oceania" title="Oceania" ></input>Oceania</label>
+	<label><input type="checkbox" name="Europe" value="Europe" title="Europe" ></input>Europe</label>
     <br/>
 	<p>Aggregation: </p>
 	<label><input type="radio" name="Continent" value="Continent" onclick="">by Continent</label>
@@ -44,34 +44,20 @@
 						return i%2 == 0 ? "#D8D8D8" : "white";
 				 });
           });
-			
 		
-        var rows = tbody.selectAll("tr.row")
-          .data(data)
-          .enter()
+        var rows = tbody.selectAll("tr.row").data(data)
+		  .enter()
           .append("tr").attr("class", "row")
-		  .filter(function(d){
-					var selectedContinents = [];
-					d3.selectAll("input:checked")
-					  .each(function(d){ selectedContinents.push(d3.select(this).attr("name"));});
-					if(selectedContinents.lenght == 0){
-						return true;
-					}
-					return selectedContinents.includes(d.continent);		
-					/*console.log(d["continent"], d["continent"] == "Europe");
-					return d["continent"] == "Europe";*/
-					})
 		  .style("background-color", 
 				 function(d, i){
 						return i%2 == 0 ? "#D8D8D8" : "white";
 				 });
 		  
-		var formatComma = d3.format(","),
-			formatDecimal = d3.format(".1f"), 
-			formatSI = d3.format(".3s");
-			
-        var cells = rows.selectAll("td")
-          .data(function(row) {		  
+		
+		var format_data = function(row){
+			var formatComma = d3.format(","),
+				formatDecimal = d3.format(".1f"), 
+				formatSI = d3.format(".3s");
 			  return columnsToDisplay.map(function(column) {
 					if(column == "gdp"){
 						return formatSI(row[column]);
@@ -83,8 +69,11 @@
 						return formatComma(row[column]);
 					}
 				  return row[column];
-				  });              
-          })
+				  });   
+		}
+		console.log(rows);
+        var cells = rows.selectAll("td")
+		.data(function(row){console.log(row); return format_data(row);})
           .enter()
           .append("td")
           .text(function(d) { return d; })
@@ -103,20 +92,91 @@
               .style("background-color", null);
 			
           });
-		  
-		  rows = rows.enter().filter(function(d){
-					var selectedContinents = [];
-					d3.selectAll("input:checked")
-					  .each(function(d){ selectedContinents.push(d3.select(this).attr("name"));});
-					if(selectedContinents.lenght == 0){
-						return true;
-					}
-					return selectedContinents.includes(d.continent);		
-					/*console.log(d["continent"], d["continent"] == "Europe");
-					return d["continent"] == "Europe";*/
-					})
+		 
+		var update = function(new_data){
+			// Row selection for update
+			var new_rows = tbody.selectAll('tr.row').data(new_data);
+			new_rows
+				.exit()
+				.remove();
+			new_rows = new_rows
+				.enter()
+				.append("tr").attr("class", "row");
 
-      });
+			var n_cells = new_rows
+				.selectAll('td')
+				.data(format_data);
+			n_cells.exit()
+				.remove();
+			n_cells = n_cells
+				.enter()
+				.append('td')
+				.text(function(d) { return d; })
+				.attr('class', d3.f('cl'));
+		}; 
+		 
+		d3.selectAll("input[type=checkbox]")
+		  .on("change", function(){
+				var selectedContinents = [];
+				d3.selectAll("input:checked")
+				  .each(function(d){ selectedContinents.push(d3.select(this).attr("name"));});	
+				var filtered_data = 
+					selectedContinents.lenght == 0 
+					? data
+					: data.filter(function(d){return selectedContinents.includes(d.continent)});
+				
+				update(filtered_data);
+				
+		  
+				/*rows.exit().remove();
+				  
+				tbody.selectAll("tr")
+				 .style("display", function(d){
+					if(selectedContinents.lenght == 0)
+						return "table-row"; 
+					return selectedContinents.includes(d.continent)? "table-row" : "none"; })
+			     .style("background-color", 
+				 function(d, i){
+						return i%2 == 0 ? "#D8D8D8" : "white";
+				 });  */
+				  
+				  
+				/*console.log(selectedContinents.lenght == 0, selectedContinents.lenght );					
+				
+				
+				
+				selectAll(row).data(newData).each().enter().exit()
+				
+				rows.data(filtered_data)
+				.enter()
+				.append("tr").attr("class", "row")
+				.style("background-color", 
+						 function(d, i){
+								return i%2 == 0 ? "#D8D8D8" : "white";
+						 });
+						 
+				cells.data(function(row) {	return format(row); })
+				  .enter()
+				  .append("td")
+				  .text(function(d) { return d; })
+				  .on("mouseover", function(d, i) {
+
+					d3.select(this.parentNode)
+					  .style("background-color", "#F3ED86");
+				
+				  }).on("mouseout", function() {
+
+					tbody.selectAll("tr")
+					  .style("background-color", function(d, i){
+									return i%2 == 0 ? "#D8D8D8" : "white";
+							})
+					  .selectAll("td")
+					  .style("background-color", null);
+			
+					});	*/
+			
+          });
+		});
 	  
     </script> 
   </body>
