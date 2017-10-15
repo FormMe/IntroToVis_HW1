@@ -2,8 +2,21 @@
 <html lang="en">
 <meta charset="utf-8">
 <link ref="styles.css">
+<style>
+
+.chart div {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+}
+
+</style>
   <body>
     <script src="https://d3js.org/d3.v4.min.js"></script>
+	<script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
     <input type="range" name="points" min="1995" max="2012" step="1" value="0" id="slider-time" oninput=";"><label id="year"></label>
     <br/>
 	<label><input type="checkbox" name="Americas" value="Americas" title="Americas" ></input>Americas</label>
@@ -15,7 +28,9 @@
 	Aggregation:
 	<label><input type="radio" name="Aggregation" value="Continent">by Continent</label>
 	<label><input type="radio" name="Aggregation" value="None" checked>None</label>
-	
+
+	<div id="wrapper">
+	</div>
 	<script src="tableScript.js"></script>
   </body>
 </html>
