@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <meta charset="utf-8">
-<script >
-
-</script>
+<link ref="styles.css">
   <body>
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <input type="range" name="points" min="1995" max="2012" step="1" value="0" id="slider-time" oninput=";"><label id="year"></label>
+    <br/>
 	<label><input type="checkbox" name="Americas" value="Americas" title="Americas" ></input>Americas</label>
 	<label><input type="checkbox" name="Africa" value="Africa" title="Africa"></input>Africa</label>
 	<label><input type="checkbox" name="Asia" value="Asia" title="Asia" ></input>Asia</label>
@@ -13,8 +13,8 @@
 	<label><input type="checkbox" name="Europe" value="Europe" title="Europe" ></input>Europe</label>
     <br/>
 	Aggregation:
-	<label><input type="radio" name="Aggregation" value="Continent" onclick="">by Continent</label>
-	<label><input type="radio" name="Aggregation" value="None" onclick="">None</label>
+	<label><input type="radio" name="Aggregation" value="Continent">by Continent</label>
+	<label><input type="radio" name="Aggregation" value="None" checked>None</label>
 	
 	<script src="tableScript.js"></script>
   </body>

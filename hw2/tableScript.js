@@ -6,7 +6,7 @@ var format_data = function(row){
 	  		.map(function(column) {
 				var formatComma = d3.format(","),
 				formatDecimal = d3.format(".1f"), 
-				formatSI = d3.format(".3s");
+				formatSI = d3.formatPrefix('.1', 1e9);
 				if(column == "gdp"){
 					return formatSI(row[column]);
 				}
@@ -30,7 +30,7 @@ var format_data = function(row){
 
 }
 
- d3.json("https://raw.githubusercontent.com/avt00/dvcourse/master/countries_2012.json", function(error, data){
+ d3.json("https://raw.githubusercontent.com/avt00/dvcourse/master/countries_1995_2012.json", function(error, data){
     
     var table = d3.select("body").append("table"),
       thead = table.append("thead")
@@ -75,6 +75,7 @@ var format_data = function(row){
 	     zebra_color();
     });
 	 
+	update(aggregeate_data(filter_continents(exctract_year(data))));
 	zebra_color();
 
 	function update(new_data){
@@ -132,15 +133,37 @@ var format_data = function(row){
 		  		.map(function (d) {return d.value; });
 	}
 
+	function exctract_year(_data) {
+		var year = d3.select('input[type=range]').node().valueAsNumber;
+		document.getElementById("year").innerHTML = year; 
+		return _data.map(function (d) {
+				yearItem = d["years"].find(function (item) { return item.year == year;});
+				return {
+					'name': d.name,
+					'continent': d.continent,
+					'gdp': yearItem.gdp, 
+					'life_expectancy': yearItem.life_expectancy,
+					'population': yearItem.population,
+					'year': year
+				};
+		});
+	}
+
 	d3.selectAll("input[type=checkbox]")
-	  .on("change", function(){			
-			update(aggregeate_data(filter_continents(data)));
+	  .on("change", function(){		
+			update(aggregeate_data(filter_continents(exctract_year(data))));
 			zebra_color();
       });
 
-      d3.selectAll("input[type=radio]")
+    d3.selectAll("input[type=radio]")
 	  .on("change", function(){
-			update(filter_continents(aggregeate_data(data)));	
+			update(aggregeate_data(filter_continents(exctract_year(data))));
 			zebra_color();		
-      });		
+      });
+
+    d3.selectAll("input[type=range]")
+      .on("change", function () {
+			update(aggregeate_data(filter_continents(exctract_year(data))));
+			zebra_color();		    		
+      })
 	});
