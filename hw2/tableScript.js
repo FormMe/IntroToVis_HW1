@@ -21,22 +21,13 @@ var format_data = function(row){
 	  	};
 
  function zebra_color () {
-	d3.select('tbody').selectAll("tr.row")
-        .selectAll('td')
-        .on("mouseover", function (d, i) {
+    d3.select('tbody')
+      .selectAll("tr.row")
+      .style("background-color", 
+             function(d, i){
+                    return i%2 == 0 ? "#D8D8D8" : "white";
+        });
 
-            d3.select(this.parentNode)
-                .style("background-color", "#ffb0bf");
-
-        }).on("mouseout", function () {
-        tbody.selectAll("tr")
-            .style("background-color", null)
-            .selectAll("td")
-            .style("background-color", null)
-	    d3.select('tbody')
-	      .selectAll("tr:nth-child(odd)")
-	      .style("background-color", "#D8D8D8");
-    });
 }
 
  d3.json("https://raw.githubusercontent.com/avt00/dvcourse/master/countries_2012.json", function(error, data){
@@ -59,6 +50,7 @@ var format_data = function(row){
 			 .sort(function(a, b) {
 					  return d3.descending(a[header], b[header]) || d3.ascending(a["name"], b["name"]);
 					});
+			zebra_color();
       });
 	
     var rows = tbody.selectAll("tr.row")
@@ -71,11 +63,21 @@ var format_data = function(row){
 	.data(format_data)
       .enter()
       .append("td")
-      .text(function(d) { return d;});
+      .text(function(d) { return d;})
+      .on("mouseover", function (d, i) {
+            d3.select(this.parentNode)
+                .style("background-color", "#ffb0bf");
+        }).on("mouseout", function () {
+        tbody.selectAll("tr")
+            .style("background-color", null)
+            .selectAll("td")
+            .style("background-color", null)
+	     zebra_color();
+    });
 	 
 	zebra_color();
 
-	var update = function(new_data){
+	function update(new_data){
 	    var new_rows = tbody.selectAll('tr.row').data(new_data);
 	    new_rows
 	        .exit()
@@ -100,80 +102,45 @@ var format_data = function(row){
 	    .text(function (d) { return d; })
 	}; 
 	 
+	function filter_continents(_data) {		
+  		var len = 0;
+		var selectedContinents = [];
+		d3.selectAll("input[type=checkbox]:checked")
+		  .each(function(d){ len = selectedContinents.push(d3.select(this).property("value"));});	
+		  
+		return len == 0 
+			? _data
+			: _data.filter(function(d){return selectedContinents.includes(d.continent)});
+	}
+
+	function aggregeate_data(_data) {
+		var AggType = d3.select('input[name="Aggregation"]:checked').node().value;
+		return AggType == "None" 
+			? _data
+			: d3.nest()
+			    .key(function(d) { return d.continent; })
+			    .rollup(function(v) { 
+			    	return {
+						'name': v[0].continent,
+						'continent': v[0].continent,
+						'gdp': d3.sum(v, function(d) { return d.gdp; }), 
+						'life_expectancy': d3.min(v, function(d) { return d.life_expectancy; }),
+						'population': d3.sum(v, function(d) { return d.population; }),
+						'year': v[0].year
+					}}) 
+		  		.entries(_data)
+		  		.map(function (d) {return d.value; });
+	}
+
 	d3.selectAll("input[type=checkbox]")
-	  .on("change", function(){
-			var selectedContinents = [];
-			d3.selectAll("input:checked")
-			  .each(function(d){ selectedContinents.push(d3.select(this).property("name"));});	
-			var filtered_data = 
-				selectedContinents.lenght == 0 
-				? data
-				: data.filter(function(d){return selectedContinents.includes(d.continent)});
-			
-			update(filtered_data);
-			
+	  .on("change", function(){			
+			update(aggregeate_data(filter_continents(data)));
+			zebra_color();
       });
 
       d3.selectAll("input[type=radio]")
 	  .on("change", function(){
-			var AggType;
-			d3.selectAll('input[name="agregation"]:checked')
-			  .each(function(d){ AggType = d3.select(this).property("value");});	
-			var agg_data = 
-				AggType.lenght == "None" 
-				? data
-				: data.filter(function(d){return selectedContinents.includes(d.continent)});
-			
-			update(filtered_data);
-			
-      });
-	  
-	  
-			/*rows.exit().remove();
-			  
-			tbody.selectAll("tr")
-			 .style("display", function(d){
-				if(selectedContinents.lenght == 0)
-					return "table-row"; 
-				return selectedContinents.includes(d.continent)? "table-row" : "none"; })
-		     .style("background-color", 
-			 function(d, i){
-					return i%2 == 0 ? "#D8D8D8" : "white";
-			 });  */
-			  
-			  
-			/*console.log(selectedContinents.lenght == 0, selectedContinents.lenght );					
-			
-			
-			
-			selectAll(row).data(newData).each().enter().exit()
-			
-			rows.data(filtered_data)
-			.enter()
-			.append("tr").attr("class", "row")
-			.style("background-color", 
-					 function(d, i){
-							return i%2 == 0 ? "#D8D8D8" : "white";
-					 });
-					 
-			cells.data(function(row) {	return format(row); })
-			  .enter()
-			  .append("td")
-			  .text(function(d) { return d; })
-			  .on("mouseover", function(d, i) {
-
-				d3.select(this.parentNode)
-				  .style("background-color", "#F3ED86");
-			
-			  }).on("mouseout", function() {
-
-				tbody.selectAll("tr")
-				  .style("background-color", function(d, i){
-								return i%2 == 0 ? "#D8D8D8" : "white";
-						})
-				  .selectAll("td")
-				  .style("background-color", null);
-		
-				});	*/
-		
+			update(filter_continents(aggregeate_data(data)));	
+			zebra_color();		
+      });		
 	});
