@@ -6,7 +6,7 @@ var format_data = function(row){
 	  		.map(function(column) {
 				var formatComma = d3.format(","),
 				formatDecimal = d3.format(".1f"), 
-				formatSI = d3.formatPrefix('.1', 1e9);
+				formatSI = d3.format('.3s');
 				if(column == "gdp"){
 					return formatSI(row[column]);
 				}
@@ -27,12 +27,38 @@ var format_data = function(row){
              function(d, i){
                     return i%2 == 0 ? "#D8D8D8" : "white";
         });
-
 }
+console.log(d3.selectAll('input[name="Display"]'));
+d3.selectAll('input[name="Display"]')
+  .on("change", function(){
+	var disp = d3.select('input[name="Display"]:checked').node().value;
+	console.log(disp);
+	if (disp == "Table") {
+		d3.select("#Table")
+		.style("display", "block");
+		d3.select("#BarChart")
+		.style("display", "none");
+		d3.selectAll('#Encode')
+		.style("display", "none");
+		d3.selectAll('#Sort')
+		.style("display", "none");
+	}
+	else if (disp == "BarChart"){
+		d3.select("#Table")
+		.style("display", "none");
+		d3.select("#BarChart")
+		.style("display", "block");
+		d3.selectAll('#Encode')
+		.style("display", "block");
+		d3.selectAll('#Sort')
+		.style("display", "block");
+	}
+
+  });
 
  d3.json("https://raw.githubusercontent.com/avt00/dvcourse/master/countries_1995_2012.json", function(error, data){
     
-    var table = d3.select("body").append("table"),
+    var table = d3.select("body").append("table").attr("id", "Table"),
       thead = table.append("thead")
                    .attr("class", "thead");
       tbody = table.append("tbody");
@@ -50,10 +76,10 @@ var format_data = function(row){
         tbody.selectAll("tr")
 			 .sort(function(_a, _b) {
 			 		var aName = _a["name"], bName = _b["name"],
-						isNum = (header == "gdp" || header == "life_expectancy" || header == "population" || header == "year"  ),
+						isNum = (header == "gdp" || header == "life_expectancy" || header == "population" || header == "year" ),
 			 			a = isNum ? parseFloat(_a[header]) : _a[header];
 			 			b = isNum ? parseFloat(_b[header]) : _b[header];
-			 			
+
 			 		if(ascending) {
 			 			if(header == "continent") {
 					  		return d3.ascending(a, b) || d3.ascending(aName, bName);
@@ -176,7 +202,7 @@ var format_data = function(row){
 			zebra_color();
       });
 
-    d3.selectAll("input[type=radio]")
+    d3.selectAll('input[name="Aggregation"]')
 	  .on("change", function(){
 			update(aggregeate_data(filter_continents(exctract_year(data))));
 			zebra_color();		
@@ -188,6 +214,8 @@ var format_data = function(row){
 			zebra_color();		    		
       })
 	});
+
+
 
 var categories= ['','Accessories', 'Audiophile', 'Camera & Photo', 'Cell Phones', 'Computers','eBook Readers','Gadgets','GPS & Navigation','Home Audio','Office Electronics','Portable Audio','Portable Video','Security & Surveillance','Service','Television & Video','Car & Vehicle'];
 
@@ -216,7 +244,7 @@ var categories= ['','Accessories', 'Audiophile', 'Camera & Photo', 'Cell Phones'
 						.domain([0,categories.length])
 						.range(colors);
 
-		var canvas = d3.select('#wrapper')
+		var canvas = d3.select('#BarChart')
 						.append('svg')
 						.attr('width',900)
 						.attr('height',550);

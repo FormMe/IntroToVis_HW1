@@ -17,20 +17,42 @@
   <body>
     <script src="https://d3js.org/d3.v4.min.js"></script>
 	<script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
-    <input type="range" name="points" min="1995" max="2012" step="1" value="0" id="slider-time" oninput=";"><label id="year"></label>
+
+	<label><input type="radio" name="Display" value="Table" checked>Table</label>
+	<label><input type="radio" name="Display" value="BarChart" >Bar Chart</label>
     <br/>
 	<label><input type="checkbox" name="Americas" value="Americas" title="Americas" ></input>Americas</label>
 	<label><input type="checkbox" name="Africa" value="Africa" title="Africa"></input>Africa</label>
 	<label><input type="checkbox" name="Asia" value="Asia" title="Asia" ></input>Asia</label>
 	<label><input type="checkbox" name="Oceania" value="Oceania" title="Oceania" ></input>Oceania</label>
 	<label><input type="checkbox" name="Europe" value="Europe" title="Europe" ></input>Europe</label>
+
     <br/>
 	Aggregation:
 	<label><input type="radio" name="Aggregation" value="Continent">by Continent</label>
 	<label><input type="radio" name="Aggregation" value="None" checked>None</label>
+	<br/>
+	<div id="Encode" style="display: none">
+		Encode bars by:
+		<label><input type="radio" name="Encode" value="population">Population</label>
+		<label><input type="radio" name="Encode" value="gdp" checked>GDP</label>
+		<label><input type="radio" name="Encode" value="life_expectancy" checked>Life Expectancy</label>
+		<br/>
+    </div>
+    <div id="Sort" style="display: none">
+    	Sort by:
+		<label><input type="radio" name="Sort" value="population">Population</label>
+		<label><input type="radio" name="Sort" value="gdp" checked>GDP</label>
+		<label><input type="radio" name="Sort" value="life_expectancy" checked>Life Expectancy</label>
+		<label><input type="radio" name="Sort" value="name" checked>Name</label>
+		<label><input type="radio" name="Sort" value="continent" checked>Continent</label>
+	    <br/>
+    </div>
 
-	<div id="wrapper">
-	</div>
+    <input type="range" name="points" min="1995" max="2012" step="1" value="0" id="slider-time" oninput=";"><label id="year"></label>
+
+	<div id="BarChart" style="display: none"></div>
 	<script src="tableScript.js"></script>
+	
   </body>
 </html>
