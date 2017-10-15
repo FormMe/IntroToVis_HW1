@@ -48,22 +48,26 @@ var format_data = function(row){
       .on("click", function(header, i) {
  		ascending = !ascending;
         tbody.selectAll("tr")
-			 .sort(function(a, b) {
- 		console.log(header);
+			 .sort(function(_a, _b) {
+			 		var aName = _a["name"], bName = _b["name"],
+						isNum = (header == "gdp" || header == "life_expectancy" || header == "population" || header == "year"  ),
+			 			a = isNum ? parseFloat(_a[header]) : _a[header];
+			 			b = isNum ? parseFloat(_b[header]) : _b[header];
+			 			
 			 		if(ascending) {
 			 			if(header == "continent") {
-					  		return d3.ascending(a[header], b[header]) || d3.ascending(a["name"], b["name"]);
+					  		return d3.ascending(a, b) || d3.ascending(aName, bName);
 						}
 						else{
-							return d3.ascending(a[header], b[header]);
+							return d3.ascending(a, b);
 						}
 			 		}
 			 		else {
 			 			if(header == "continent") {
-					  		return d3.descending(a[header], b[header]) || d3.ascending(a["name"], b["name"]);
+					  		return d3.descending(a, b) || d3.ascending(aName, bName);
 						}
 						else {
-							return d3.descending(a[header], b[header]);
+							return d3.descending(a, b);
 						}
 			 		}
 				});
