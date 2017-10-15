@@ -128,7 +128,6 @@ function cmp(_a, _b) {
 d3.selectAll('input[name="Display"]')
   .on("change", function(){
 	var disp = d3.select('input[name="Display"]:checked').node().value;
-	console.log(disp);
 	if (disp == "Table") {
 		d3.select("#Table")
 		.style("display", "block");
@@ -170,7 +169,7 @@ d3.selectAll('input[name="Display"]')
 			update(aggregeate_data(filter_continents(exctract_year(data))));
 			zebra_color();		    		
 	  });
-	  
+
     var table = d3.select("body").append("table").attr("id", "Table"),
       thead = table.append("thead")
                    .attr("class", "thead");
@@ -212,11 +211,127 @@ d3.selectAll('input[name="Display"]')
             .style("background-color", null)
 	     zebra_color();
     });
-	 
-	update(aggregeate_data(filter_continents(exctract_year(data))));
+	
+	var data_bar = aggregeate_data(filter_continents(exctract_year(data)));
+	update(data_bar);
 	zebra_color();
 
+	/*Bar Chart*/
+
+
+    //set up svg using margin conventions - we'll need plenty of room on the left for labels
+    var margin = {
+        top: 5,
+        right: 25,
+        bottom: 55,
+        left: 180
+    };
+
+    var width =  600 - margin.left - margin.right,
+        height = data_bar.length * 11 - margin.top - margin.bottom;
+    console.log(height);
+    var svg = d3.select("#BarChart").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var x = d3.scaleLinear()
+        .range([0, width])
+        .domain([0, d3.max(data_bar, function (d) {
+            return d.population;
+        })]);
+
+    var y = d3.scaleBand()
+    	.rangeRound([0, height])
+        .domain(data_bar.map(function (d) {
+            return d.name;
+        }));
+
+    var gy = svg.append("g")
+        .attr("class", "y axis")
+        .call(d3.axisLeft(y))
+
+    var bars = svg.selectAll(".bar")
+        .data(data_bar)
+        .enter()
+        .append("g")
+        .style("fill", function(d, i){
+        	var colors = {
+        		'Americas': "blue",
+        		'Africa': "yellow",
+        		'Oceania': "red",
+        		'Asia': "green",
+        		'Europe': "brown"
+        	};
+        	return colors[d.continent];
+        });
+
+    //append rects
+    bars.append("rect")
+        .attr("class", "bar")
+        .attr("y", function (d) {
+            return y(d.name);
+        })
+        .attr("height", y.bandwidth())
+        .attr("x", 0)
+        .attr("width", function (d) {
+            return x(d.population);
+        });
+
+    //add a value label to the right of each bar
+    bars.append("text")
+        .attr("class", "label")
+        //y position of the label is halfway down the bar
+        .attr("y", function (d) {
+            return y(d.name) + y.bandwidth() / 2 + 4;
+        })
+        //x position is 3 pixels to the right of the bar
+        .attr("x", function (d) {
+            return x(d.population) + 3;
+        });
+
+ });
+
+/*
+
+	var margin = {
+            top: 15,
+            right: 25,
+            bottom: 15,
+            left: 60
+        };
+
+    var width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    var svg = d3.select("#BarChart").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+ 
+    var xScale = d3.scaleLinear().range([0, width]);
+
+    var max = d3.max(d, function(d) { return d.population; } );
+    var min = 0;
+
+    var svg = d3.select("#BarChart").append("svg")
+                .attr("width", width+margin.left+margin.right)
+                .attr("height", height+margin.top+margin.bottom);
+ 
+	var groups = svg.append("g")
+                    .data(d)
+                  .enter()
+	                .append("rect")
+	                .attr("width", function(d) { return xScale(d.population); })
+	                .attr("height", 5);
+
 	});
+
+
 
 
 
@@ -266,7 +381,7 @@ var categories= ['','Accessories', 'Audiophile', 'Camera & Photo', 'Cell Phones'
 							})
 						  .style({'stroke':'#adadad','stroke-width':'1px'});
 
-		/*var	xAxis = d3.svg.axis();
+		var	xAxis = d3.svg.axis();
 			xAxis
 				.orient('bottom')
 				.scale(xscale)
@@ -278,7 +393,7 @@ var categories= ['','Accessories', 'Audiophile', 'Camera & Photo', 'Cell Phones'
 				.scale(yscale)
 				.tickSize(2)
 				.tickFormat(function(d,i){ return categories[i]; })
-				.tickValues(d3.range(17));*/
+				.tickValues(d3.range(17));
 
 		var y_xis = canvas.append('g')
 						  .attr("transform", "translate(150,0)")
@@ -319,3 +434,4 @@ var categories= ['','Accessories', 'Audiophile', 'Camera & Photo', 'Cell Phones'
 							.text(function(d, i){ return categories[i] + d+"$"; })
 							.style({'fill':'#fff','font-size':'14px'});
 
+*/

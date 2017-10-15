@@ -2,18 +2,25 @@
 <html lang="en">
 <meta charset="utf-8">
 <link ref="styles.css">
-<style>
-
-.chart div {
-  font: 10px sans-serif;
-  background-color: steelblue;
-  text-align: right;
-  padding: 3px;
-  margin: 1px;
-  color: white;
-}
-
-</style>
+ <style>
+        body {
+            font-family: "Arial", sans-serif;
+        }
+        
+        .bar {
+            height: 5px;
+        }
+        
+        .axis {
+            font-size: 10px;
+        }
+        
+        .axis path,
+        .axis line {
+            fill: none;
+            display: none;
+        }        
+    </style>
   <body>
     <script src="https://d3js.org/d3.v4.min.js"></script>
 	<script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
@@ -35,16 +42,16 @@
 	<div id="Encode" style="display: none">
 		Encode bars by:
 		<label><input type="radio" name="Encode" value="population">Population</label>
-		<label><input type="radio" name="Encode" value="gdp" checked>GDP</label>
+		<label><input type="radio" name="Encode" value="gdp" >GDP</label>
 		<label><input type="radio" name="Encode" value="life_expectancy" checked>Life Expectancy</label>
 		<br/>
     </div>
     <div id="Sort" style="display: none">
     	Sort by:
 		<label><input type="radio" name="Sort" value="population">Population</label>
-		<label><input type="radio" name="Sort" value="gdp" checked>GDP</label>
-		<label><input type="radio" name="Sort" value="life_expectancy" checked>Life Expectancy</label>
-		<label><input type="radio" name="Sort" value="name" checked>Name</label>
+		<label><input type="radio" name="Sort" value="gdp" >GDP</label>
+		<label><input type="radio" name="Sort" value="life_expectancy" >Life Expectancy</label>
+		<label><input type="radio" name="Sort" value="name" >Name</label>
 		<label><input type="radio" name="Sort" value="continent" checked>Continent</label>
 	    <br/>
     </div>
