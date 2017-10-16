@@ -2,25 +2,18 @@
 <html lang="en">
 <meta charset="utf-8">
 <link ref="styles.css">
- <style>
-        body {
-            font-family: "Arial", sans-serif;
-        }
-        
-        .bar {
-            height: 6px;
-        }
-        
-        .axis {
-            font-size: 10px;
-        }
-        
-        .axis path,
-        .axis line {
-            fill: none;
-            display: none;
-        }        
-    </style>
+  <style type="text/css">
+   TABLE {
+    border-collapse: collapse; /* Убираем двойные линии между ячейками */
+   }
+   TD, TH {
+    padding: 3px; /* Поля вокруг содержимого таблицы */
+    border: 1px solid black; /* Параметры рамки */
+   }
+   TH {
+    background: #b0e0e6; /* Цвет фона */
+   }
+  </style>
   <body>
     <script src="https://d3js.org/d3.v4.min.js"></script>
 	<script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
@@ -56,7 +49,7 @@
 	    <br/>
     </div>
 
-    <input type="range" name="points" min="1995" max="2012" step="1" value="0" id="slider-time" oninput=";"><label id="year"></label>
+    <input type="range" name="points" min="1995" max="2012" step="1" value="0" id="slider-time" oninput=";" style="width: 350px"><label id="year"></label>
 
 	<div id="BarChart" style="display: none"></div>
 	<script src="tableScript.js"></script>

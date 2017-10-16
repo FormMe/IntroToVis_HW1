@@ -255,7 +255,6 @@ d3.selectAll('input[name="Display"]')
 
     var width =  600 - margin.left - margin.right,
         height = data_bar.length * 11 - margin.top - margin.bottom;
-    console.log(height);
     var svg = d3.select("#BarChart").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
