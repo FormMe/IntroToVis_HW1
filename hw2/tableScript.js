@@ -29,7 +29,7 @@ var format_data = function(row){
         });
 }
 
-function update(new_data){
+function update_table(new_data){
     var new_rows = tbody.selectAll('tr.row').data(new_data);
     new_rows
         .exit()
@@ -47,8 +47,6 @@ function update(new_data){
     n_cells = n_cells
         .enter()
         .append('td');
-
-    var temp = tbody.selectAll('td').data();
 
     tbody.selectAll('td')
     .text(function (d) { return d; })
@@ -100,14 +98,15 @@ function exctract_year(_data) {
 	});
 }
 
+var sortHeader = null;
 function cmp(_a, _b) {
 		var aName = _a["name"], bName = _b["name"],
-		isNum = (header == "gdp" || header == "life_expectancy" || header == "population" || header == "year" ),
-			a = isNum ? parseFloat(_a[header]) : _a[header];
-			b = isNum ? parseFloat(_b[header]) : _b[header];
+			isNum = (sortHeader == "gdp" || sortHeader == "life_expectancy" || sortHeader == "population" || sortHeader == "year" ),
+			a = isNum ? parseFloat(_a[sortHeader]) : _a[sortHeader];
+			b = isNum ? parseFloat(_b[sortHeader]) : _b[sortHeader];
 
 		if(ascending) {
-			if(header == "continent") {
+			if(sortHeader == "continent") {
 	  			return d3.ascending(a, b) || d3.ascending(aName, bName);
 			}
 			else{
@@ -115,7 +114,7 @@ function cmp(_a, _b) {
 			}
 		}
 		else {
-			if(header == "continent") {
+			if(sortHeader == "continent") {
 	  			return d3.descending(a, b) || d3.ascending(aName, bName);
 			}
 			else {
@@ -152,23 +151,6 @@ d3.selectAll('input[name="Display"]')
   });
 
  d3.json("https://raw.githubusercontent.com/avt00/dvcourse/master/countries_1995_2012.json", function(error, data){
-    d3.selectAll("input[type=checkbox]")
-	  .on("change", function(){		
-			update(aggregeate_data(filter_continents(exctract_year(data))));
-			zebra_color();
-	  });
-
-	d3.selectAll('input[name="Aggregation"]')
-	  .on("change", function(){
-			update(aggregeate_data(filter_continents(exctract_year(data))));
-			zebra_color();		
-	  });
-
-	d3.selectAll("input[type=range]")
-	  .on("change", function () {
-			update(aggregeate_data(filter_continents(exctract_year(data))));
-			zebra_color();		    		
-	  });
 
     var table = d3.select("body").append("table").attr("id", "Table"),
       thead = table.append("thead")
@@ -184,10 +166,11 @@ d3.selectAll('input[name="Display"]')
       .append("th")
       .text(function(d) { return d;})
       .on("click", function(header, i) {
+      	sortHeader = header;
  		ascending = !ascending;
         tbody.selectAll("tr")
 			 .sort(function (a, b) { return cmp(a, b);});
-			zebra_color();
+		zebra_color();
       });
 	
     var rows = tbody.selectAll("tr.row")
@@ -213,11 +196,54 @@ d3.selectAll('input[name="Display"]')
     });
 	
 	var data_bar = aggregeate_data(filter_continents(exctract_year(data)));
-	update(data_bar);
+	update_table(data_bar);
 	zebra_color();
 
 	/*Bar Chart*/
 
+	function update_bar_chart(new_data) {
+	    //var new_rows = tbody.selectAll('tr.row').data(new_data);
+	    var new_bars = svg.selectAll(".bar").data(new_data)
+	    //new_rows
+	    //    .exit()
+	    //    .remove();
+	    new_bars
+	        .exit()
+	        .remove();
+	    //new_rows = new_rows
+	    //    .enter()
+	    //    .append("tr").attr("class", "row").merge(new_rows);
+
+	    new_bars = new_bars
+	    	.enter()
+	    	.append("g").merge(new_bars);
+
+	    //var n_cells = new_rows
+	    //    .selectAll('td')
+	    //    .data(format_data);
+
+	    var new_rects = new_bars
+	    	.attr("class", "bar")
+        	.attr("y", function (d) {
+            	return y(d.name);
+	        })
+	        .attr("height", y.bandwidth())
+	        .attr("x", 0)
+	        .attr("width", function (d) {
+	            return x(d.population);
+	        });
+
+	    new_rects.exit().remove();
+
+	    //n_cells.exit()
+	    //    .remove();
+	    new_rects = new_rects
+	        .enter()
+	        .append('rect');
+
+	    //tbody.selectAll('td')
+	    //.text(function (d) { return d; })
+	}
 
     //set up svg using margin conventions - we'll need plenty of room on the left for labels
     var margin = {
@@ -291,6 +317,22 @@ d3.selectAll('input[name="Display"]')
             return x(d.population) + 3;
         });
 
+	 function display(data){
+		var disp_data = aggregeate_data(filter_continents(exctract_year(data)));
+		update_table(disp_data);
+        tbody.selectAll("tr")
+			 .sort(function (a, b) { return cmp(a, b);});
+		zebra_color();		    		
+		update_bar_chart(disp_data)
+	  }
+    d3.selectAll("input[type=checkbox]")
+	  .on("change", function () { display(data); });
+
+	d3.selectAll('input[name="Aggregation"]')
+	  .on("change", function () { display(data); });
+
+	d3.selectAll("input[type=range]")
+	  .on("change", function () { display(data); });
  });
 
 /*
