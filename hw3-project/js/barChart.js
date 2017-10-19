@@ -21,7 +21,6 @@ class BarChart {
     	let newData = this.allData.map(function (d) {
     		return {'year': d.year, 'value': d[selectedDimension] };
     	});
-        console.log(this.allData);
     	var width = 500, height = 400, paddingLeft = 65;
 
 		var y = d3.scaleLinear()
@@ -79,23 +78,24 @@ class BarChart {
 	        .attr("transform", "translate("+paddingLeft+",0)")
 	        .call(d3.axisLeft(y));
 
-
         // ******* TODO: PART II *******
+        var ad = this.allData;
+        var map = this.worldMap;
+        var info = this.infoPanel;
         d3.select('#bars')
           .selectAll('rect')
           .on("click", function (d, i) {
-          	
-        console.log(this.allData);
+
           	d3.select('#bars')
           	  .selectAll('rect')
           	  .style("fill", function(d){return color(d.value);});
           	d3.select(this)
           	  .style("fill", "red");
 
-          	//var worldcupData = this.allData.find(function (d) { return d.year === [i].year; });
-          	console.log(this.allData);
-          	//this.worldMap.updateMap(worldcupData);
-          	//this.infoPanel.updateInfo(worldcupData);
+          	var worldcupData = ad.find(function (d) { return d.year === ad[i].year; });
+
+          	map.updateMap(worldcupData);
+          	info.updateInfo(worldcupData);
 
           })
         // Implement how the bars respond to click events
@@ -114,9 +114,7 @@ class BarChart {
      *  goals, matches, attendance and teams.
      */
     chooseData() {
-        // ******* TODO: PART I *******
-        //Changed the selected data when a user selects a different
-        // menu item from the drop down.
-
+    	
     }
+
 }
