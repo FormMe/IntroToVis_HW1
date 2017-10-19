@@ -21,35 +21,26 @@ class BarChart {
     	let newData = this.allData.map(function (d) {
     		return {'year': d.year, 'value': d[selectedDimension] };
     	});
-    	var width = 500, height = 400;
+        console.log(this.allData);
+    	var width = 500, height = 400, paddingLeft = 65;
 
 		var y = d3.scaleLinear()
 			.range([height, 0])
 			.domain([0, d3.max(newData, function(d) { return d.value; })]);
 
-
 		var x = d3.scaleBand()
-			.range([width, 0])
+			.range([width, paddingLeft])
 			.padding(0.1)
 			.domain(newData.map(function(d) { return d.year; }));
-
 
         var color = d3.scaleLinear()
         		.domain([1,newData.lenght])
 	      		.interpolate(d3.interpolateHcl)
 	      		.range([d3.rgb("#007AFF"), d3.rgb('#be6bf4')]);
 
-/*
-	    var chart = d3.select('#barChart');
-	    var groups = chart.selectAll('g')
-	    		.remove().exit()
-	    		.data(newData);
-
-        var appending = groups.enter()
-        			.append('g')
-        groups.exit().remove();
-        groups = groups.merge(appending);*/
-
+    	color = d3.scaleSequential(d3["interpolatePuBu"])
+    			  .domain([d3.min(newData, function(d) { return d.value; }),
+    			   d3.max(newData, function(d) { return d.value; })]);
 
         var appending = d3.select('#bars')
         	.selectAll('rect')
@@ -61,45 +52,50 @@ class BarChart {
 	    	.append('rect')
 	    	.merge(appending)
 	    	.transition()
-	        .duration(500)
+	        .duration(1000)
 	        .style("fill", function(d,i){return color(d.value);})
 	        .attr("y", function(d) { return y(d.value); })
 	        .attr("x", function(d) { return x(d.year); })
 	        .attr("height",function (d) {return height - y(d.value); })
 	        .attr("width",x.bandwidth());
 
-
-	    // add the x Axis
 	    d3.select('#xAxis')
 	    	.style("fill", "none")
 	    	.style("stroke", "black")
-	        //attr("transform", "translate(0," + height + ")")
-	        .call(d3.axisBottom(x));
+	        .attr("transform", "translate(0," + height + ")")
+	        .call(d3.axisBottom(x))
+			.selectAll("text")
+			    .attr("y", 0)
+			    .attr("x", 9)
+			    .attr("dy", ".35em")
+			    .attr("transform", "rotate(90)")
+			    .style("text-anchor", "start");
 
-	    // add the y Axis
 	    d3.select('#yAxis')
+	    	.transition()
+	        .duration(1000)
 	    	.style("fill", "none")
 	    	.style("stroke", "black")
+	        .attr("transform", "translate("+paddingLeft+",0)")
 	        .call(d3.axisLeft(y));
-        // Create the x and y scales; make
-        // sure to leave room for the axes
-
-        // Create the axes (hint: use #xAxis and #yAxis)
-
-        // Create the bars (hint: use #bars)
-
-
 
 
         // ******* TODO: PART II *******
         d3.select('#bars')
           .selectAll('rect')
           .on("click", function (d, i) {
+          	
+        console.log(this.allData);
           	d3.select('#bars')
           	  .selectAll('rect')
-          	  .style("fill", function(d,i){return color(d.value);});
+          	  .style("fill", function(d){return color(d.value);});
           	d3.select(this)
           	  .style("fill", "red");
+
+          	//var worldcupData = this.allData.find(function (d) { return d.year === [i].year; });
+          	console.log(this.allData);
+          	//this.worldMap.updateMap(worldcupData);
+          	//this.infoPanel.updateInfo(worldcupData);
 
           })
         // Implement how the bars respond to click events
