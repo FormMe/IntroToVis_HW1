@@ -21,19 +21,17 @@ class BarChart {
     	let newData = this.allData.map(function (d) {
     		return {'year': d.year, 'value': d[selectedDimension] };
     	});
-    	console.log(newData);
     	var width = 500, height = 400;
 
-    	var x = d3.scaleBand().rangeRound([0, width]);
-		var y = d3.scaleLinear().range([height, 0]);
- 		x.domain(newData.map(function(d) { return d.year; }));
-  		y.domain([0, d3.max(newData, function(d) { return d.value; })]);
+		var y = d3.scaleLinear()
+			.range([height, 0])
+			.domain([0, d3.max(newData, function(d) { return d.value; })]);
 
 
 		var x = d3.scaleBand()
-          .range([0, width])
-          .padding(0.1);
- 		x.domain(newData.map(function(d) { return d.year; }));
+			.range([width, 0])
+			.padding(0.1)
+			.domain(newData.map(function(d) { return d.year; }));
 
 
         var color = d3.scaleLinear()
@@ -57,25 +55,22 @@ class BarChart {
         	.selectAll('rect')
 	       	.data(newData);
 	    appending.exit().remove();
-	    console.log(appending);
+
 	    // add new elements
-	    appending.enter()
+	   appending = appending.enter()
 	    	.append('rect')
+	    	.merge(appending)
 	    	.transition()
 	        .duration(500)
 	        .style("fill", function(d,i){return color(d.value);})
-	        .attr("y", function(d) { console.log(d.value); return y(d.value); })
+	        .attr("y", function(d) { return y(d.value); })
 	        .attr("x", function(d) { return x(d.year); })
 	        .attr("height",function (d) {return height - y(d.value); })
 	        .attr("width",x.bandwidth());
 
-	    // remove old elements
-	    appending.exit().remove();
 
 	    // add the x Axis
 	    d3.select('#xAxis')
-	    	.attr("y", height)
-	    	.append("g")
 	    	.style("fill", "none")
 	    	.style("stroke", "black")
 	        //attr("transform", "translate(0," + height + ")")
@@ -83,9 +78,6 @@ class BarChart {
 
 	    // add the y Axis
 	    d3.select('#yAxis')
-	    	.append("g")
-	    	.transition()
-	        .duration(500)
 	    	.style("fill", "none")
 	    	.style("stroke", "black")
 	        .call(d3.axisLeft(y));
@@ -108,7 +100,7 @@ class BarChart {
           	  .style("fill", function(d,i){return color(d.value);});
           	d3.select(this)
           	  .style("fill", "red");
-          	
+
           })
         // Implement how the bars respond to click events
         // Color the selected bar to indicate is has been selected.
