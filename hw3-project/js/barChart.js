@@ -25,12 +25,12 @@ class BarChart {
 
 		var y = d3.scaleLinear()
 			.range([height, 0])
-			.domain([0, d3.max(newData, function(d) { return d.value; })]);
+			.domain([0, d3.max(newData, d => d.value)]);
 
 		var x = d3.scaleBand()
 			.range([width, paddingLeft])
 			.padding(0.1)
-			.domain(newData.map(function(d) { return d.year; }));
+			.domain(newData.map(d => d.year));
 
         var color = d3.scaleLinear()
         		.domain([1,newData.lenght])
@@ -38,8 +38,8 @@ class BarChart {
 	      		.range([d3.rgb("#007AFF"), d3.rgb('#be6bf4')]);
 
     	color = d3.scaleSequential(d3["interpolatePuBu"])
-    			  .domain([d3.min(newData, function(d) { return d.value; }),
-    			   d3.max(newData, function(d) { return d.value; })]);
+    			  .domain([d3.min(newData, d => d.value),
+    			   d3.max(newData, d => d.value)]);
 
         var appending = d3.select('#bars')
         	.selectAll('rect')
@@ -82,6 +82,7 @@ class BarChart {
         var ad = this.allData;
         var map = this.worldMap;
         var info = this.infoPanel;
+        var worldcupData = {a:'sdds'};
         d3.select('#bars')
           .selectAll('rect')
           .on("click", function (d, i) {
@@ -92,12 +93,10 @@ class BarChart {
           	d3.select(this)
           	  .style("fill", "red");
 
-          	var worldcupData = ad.find(function (d) { return d.year === ad[i].year; });
-
-          	map.updateMap(worldcupData);
-          	info.updateInfo(worldcupData);
-
-          })
+          	worldcupData = ad.find(function (d) { return d.year === ad[i].year; });
+	      	map.updateMap(worldcupData);
+	      	info.updateInfo(worldcupData);
+          });
         // Implement how the bars respond to click events
         // Color the selected bar to indicate is has been selected.
         // Make sure only the selected bar has this new color.
@@ -113,8 +112,4 @@ class BarChart {
      *  There are 4 attributes that can be selected:
      *  goals, matches, attendance and teams.
      */
-    chooseData() {
-    	
-    }
-
 }
