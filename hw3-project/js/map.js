@@ -70,6 +70,23 @@ class Map {
 
         // Make sure and give your paths the appropriate class (see the .css selectors at
         // the top of the provided html file)
+        var map = d3.select('#map');
+        var path = d3.geoPath().projection(this.projection);
+        var countries = topojson.feature(world, world.objects.countries).features;
+
+        map.selectAll('.countries')
+            .data(countries)
+            .enter()
+            .append('path')
+            .attr('id', d => d.id;)
+            .attr('class', 'countries')
+            .attr('d', path);
+
+      /*  map.append('g')
+            .append('path')
+            .datum(d3.geoGraticule().minorStep([5, 5]))
+            .attr('class', 'graticule')
+            .attr('d', path);*/
 
     }
 
