@@ -84,7 +84,7 @@ class Map {
 
         map.append('path')
             .datum(d3.geoGraticule())
-            .attr('class', 'graticule')
+            .attr('class', 'grat')
             .attr('d', path);
 
     }

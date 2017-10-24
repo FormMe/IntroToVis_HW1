@@ -144,8 +144,3 @@ header {
     font-size: 14px;
 
 }
-.graticule {
-    fill: none;
-    stroke: #000;
-    stroke-opacity: .3;
-}
