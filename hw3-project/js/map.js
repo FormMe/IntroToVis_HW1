@@ -78,15 +78,14 @@ class Map {
             .data(countries)
             .enter()
             .append('path')
-            .attr('id', d => d.id;)
+            .attr('id', function (d) { return d.id;})
             .attr('class', 'countries')
             .attr('d', path);
 
-      /*  map.append('g')
-            .append('path')
-            .datum(d3.geoGraticule().minorStep([5, 5]))
+        map.append('path')
+            .datum(d3.geoGraticule())
             .attr('class', 'graticule')
-            .attr('d', path);*/
+            .attr('d', path);
 
     }
 
