@@ -21,6 +21,14 @@ class Map {
         // the colors and markers for hosts/teams/winners, you can use
         // d3 selection and .classed to set these classes on and off here.
 
+        var map = d3.select('#map');
+        map.selectAll('.countries')
+            .attr('class', 'countries');
+        map.selectAll('.host')
+            .attr('class', 'countries');
+        map.selectAll('.team')
+            .attr('class', 'countries');
+
     }
 
     /**
@@ -31,7 +39,6 @@ class Map {
 
         //Clear any previous selections;
         this.clearMap();
-
         // ******* TODO: PART V *******
 
         // Add a marker for the winner and runner up to the map.
@@ -40,15 +47,30 @@ class Map {
         // as well as a .silver. These have styling attributes for the two
         // markers.
 
+        var path = d3.geoPath().projection(this.projection);
 
-        // Select the host country and change it's color accordingly.
+        worldcupData.teams_iso.forEach(function (team, i, arr) {
+            d3.select('#'+ team)
+                .attr('class', 'team');
+        });
+        d3.select('#'+ worldcupData.host_country_code)
+            .attr('class', 'host');
 
-        // Iterate through all participating teams and change their color as well.
+        d3.select('#points').select('.gold')
+            .attr('cx', worldcupData.win_pos[0])
+            .attr('cy', worldcupData.win_pos[1])
+            .attr("r", "8");
 
-        // We strongly suggest using CSS classes to style the selected countries.
 
-
+        console.log(worldcupData.ru_pos)
+        console.log(path([-112.0785,33.46764]))
+        d3.select('#points').select('.silver')
+            .attr('cx', worldcupData.ru_pos[0])
+            .attr('cy', worldcupData.ru_pos[1])            
+            .attr('d', path)
+            .attr("r", "8");
         // Add a marker for gold/silver medalists
+
     }
 
     /**
@@ -87,6 +109,8 @@ class Map {
             .attr('class', 'grat')
             .attr('d', path);
 
+        d3.select('#points').append('circle').attr('class', 'gold');
+        d3.select('#points').append('circle').attr('class', 'silver');
     }
 
 
