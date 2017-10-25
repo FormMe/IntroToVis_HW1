@@ -37,12 +37,13 @@ class Table {
         this.goalScale = null; 
 
         /** Used for games/wins/losses*/
-        this.gameScale = null; 
+        this.gameScale = 10; 
 
         /**Color scales*/
         /**For aggregate columns  Use colors '#ece2f0', '#016450' for the range.*/
-        this.aggregateColorScale = null; 
-
+        this.aggregateColorScale = d3.scaleLinear()
+                                     .domain([0, 7])
+                                     .range(['#ece2f0', '#016450']);
         /**For goal Column. Use colors '#cb181d', '#034e7b'  for the range.*/
         this.goalColorScale = null; 
     }
@@ -90,11 +91,7 @@ class Table {
             .data(function (d) {
                 console.log(d);
                 return [{'type': 'aggregate', 'vis': 'text', 'value': d['key']},
-                        {'type': 'aggregate', 'vis': 'goals', 'value': {
-                                                                        'Delta Goals': d['value']['Delta Goals'],
-                                                                        'Goals Conceded': d['value']['Goals Conceded'],
-                                                                        'Goals Made': d['value']['Goals Made']
-                                                                        }},
+                        {'type': 'aggregate', 'vis': 'goals', 'value': [d['value']['Goals Conceded'],d['value']['Goals Made']] },
                         {'type': 'aggregate', 'vis': 'text', 'value': d['value']['Result']['label']},
                         {'type': 'aggregate', 'vis': 'bar', 'value': d['value']['Wins']},
                         {'type': 'aggregate', 'vis': 'bar', 'value': d['value']['Losses']},
@@ -106,8 +103,25 @@ class Table {
              .remove();
         cells = cells
             .enter()
-            .append('td')
-            .text(d => d.value);
+            .append('td');
+
+        var bar_cells = cells.filter(function (d) {
+            return d.vis == 'bar';
+        }).append('svg')
+          .attrs(this.cell);
+
+        var cs = this.aggregateColorScale;
+        var gs = this.gameScale;
+        bar_cells.append('rect')
+            .style('fill', function (d) { return cs(d.value); })
+            .attr('width', function (d) { return d.value*gs;})
+            .attr('height', this.bar.height);
+
+        bar_cells.append('text')
+            .style('fill', 'white')
+            .attr('x', function (d) { return d.value*gs - gs;})            
+            .attr('y', this.bar.height - gs/2)
+            .text(function (d) { return d.value;})
 
         //Create table rows
 

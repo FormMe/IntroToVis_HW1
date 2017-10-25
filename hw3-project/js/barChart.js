@@ -33,13 +33,9 @@ class BarChart {
 			.domain(newData.map(d => d.year));
 
         var color = d3.scaleLinear()
-        		.domain([1,newData.lenght])
-	      		.interpolate(d3.interpolateHcl)
-	      		.range([d3.rgb("#007AFF"), d3.rgb('#be6bf4')]);
-
-    	color = d3.scaleSequential(d3["interpolatePuBu"])
-    			  .domain([d3.min(newData, d => d.value),
-    			   d3.max(newData, d => d.value)]);
+                        .domain([d3.min(newData, d => d.value),
+                               d3.max(newData, d => d.value)])
+                        .range(['#4682B4', '#191970']);
 
         var appending = d3.select('#bars')
         	.selectAll('rect')
@@ -52,7 +48,7 @@ class BarChart {
 	    	.merge(appending)
 	    	.transition()
 	        .duration(1000)
-	        .style("fill", function(d,i){return color(d.value);})
+	        .style("fill", function(d){return color(d.value);})
 	        .attr("y", function(d) { return y(d.value); })
 	        .attr("x", function(d) { return x(d.year); })
 	        .attr("height",function (d) {return height - y(d.value); })
