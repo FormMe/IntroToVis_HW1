@@ -123,6 +123,11 @@ class Table {
             .attr('y', this.bar.height - gs/2)
             .text(function (d) { return d.value;})
 
+        var text_cells = cells.filter(function (d) {
+            return d.vis == 'text';
+        })
+          .text(d => d.value);
+
         //Create table rows
 
         //Append th elements for the Team Names
