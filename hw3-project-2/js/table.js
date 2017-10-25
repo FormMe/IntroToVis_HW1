@@ -6,14 +6,14 @@ class Table {
     constructor(teamData, treeObject) {
 
         //Maintain reference to the tree Object; 
-        this.tree = null; 
+        this.tree = treeObject; 
 
         // Create list of all elements that will populate the table
         // Initially, the tableElements will be identical to the teamData
-        this.tableElements = null; // 
+        this.tableElements = teamData.slice();
 
         ///** Store all match data for the 2014 Fifa cup */
-        this.teamData = null;
+        this.teamData = teamData;
 
         //Default values for the Table Headers
         this.tableHeaders = ["Delta Goals", "Result", "Wins", "Losses", "TotalGames"];
@@ -57,11 +57,9 @@ class Table {
 
         // ******* TODO: PART II *******
 
-        //Update Scale Domains
+        d3.select('#goalHeader').append('g');
+            //.call(d3.axisBottom(x));
 
-        // Create the x axes for the goalScale.
-
-        //add GoalAxis to header of col 1.
 
         // ******* TODO: PART V *******
 
@@ -78,6 +76,39 @@ class Table {
      */
     updateTable() {
         // ******* TODO: PART III *******
+        var tbody = d3.select('#matchTable').select('tbody');
+        var rows = tbody.selectAll('tr')
+                        .data(this.tableElements);
+        rows.exit()
+            .remove();
+        rows = rows
+            .enter()
+            .append("tr").merge(rows);
+
+        var cells = rows
+            .selectAll('td')
+            .data(function (d) {
+                console.log(d);
+                return [{'type': 'aggregate', 'vis': 'text', 'value': d['key']},
+                        {'type': 'aggregate', 'vis': 'goals', 'value': {
+                                                                        'Delta Goals': d['value']['Delta Goals'],
+                                                                        'Goals Conceded': d['value']['Goals Conceded'],
+                                                                        'Goals Made': d['value']['Goals Made']
+                                                                        }},
+                        {'type': 'aggregate', 'vis': 'text', 'value': d['value']['Result']['label']},
+                        {'type': 'aggregate', 'vis': 'bar', 'value': d['value']['Wins']},
+                        {'type': 'aggregate', 'vis': 'bar', 'value': d['value']['Losses']},
+                        {'type': 'aggregate', 'vis': 'bar', 'value': d['value']['TotalGames']}
+                ];
+            });
+
+        cells.exit()
+             .remove();
+        cells = cells
+            .enter()
+            .append('td')
+            .text(d => d.value);
+
         //Create table rows
 
         //Append th elements for the Team Names
