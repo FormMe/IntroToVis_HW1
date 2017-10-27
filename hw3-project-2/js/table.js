@@ -98,7 +98,7 @@ class Table {
             .selectAll('td')
             .data(function (d) {
                 console.log(d);
-                return [{'type': 'aggregate', 'vis': 'text', 'value': d['key']},
+                return [{'type': 'aggregate', 'vis': 'cntrs', 'value': d['key']},
                         {'type': 'aggregate', 'vis': 'goals', 'value': [d['value']['Goals Made'],d['value']['Goals Conceded']] },
                         {'type': 'aggregate', 'vis': 'text', 'value': d['value']['Result']['label']},
                         {'type': 'aggregate', 'vis': 'bar', 'value': d['value']['Wins']},
@@ -131,11 +131,16 @@ class Table {
             .attr('y', this.bar.height - gs/2)
             .text(function (d) { return d.value;})
 
-        var text_cells = cells.filter(function (d) {
+        cells.filter(function (d) {
             return d.vis == 'text';
-        })
-            .text(d => d.value);
+        }).text(d => d.value);
 
+        cells.filter(function (d) {
+            return d.vis == 'cntrs';
+        })
+          .attr('valign', 'right')
+          .attr('color', '#317f19')
+          .text(d => d.value);
 
         var goals_cell = cells.filter(function (d) {
             return d.vis == 'goals';
