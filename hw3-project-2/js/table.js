@@ -33,8 +33,12 @@ class Table {
         this.goalsMadeHeader = 'Goals Made';
         this.goalsConcededHeader = 'Goals Conceded';
 
+
         /** Setup the scales*/
-        this.goalScale = null; 
+        this.goalWidht = 200;
+        this.goalScale = d3.scaleLinear()
+                            .range([10, this.goalWidht-10])
+                            .domain([0, 18]);
 
         /** Used for games/wins/losses*/
         this.gameScale = 10; 
@@ -58,9 +62,13 @@ class Table {
 
         // ******* TODO: PART II *******
 
-        d3.select('#goalHeader').append('g');
-            //.call(d3.axisBottom(x));
-
+        d3.select('#goalHeader')
+            .append('svg')
+            .attr('width', this.goalWidht)
+            .attr('height', 35)
+            .append('g')
+            .attr("transform", "translate(0," + 25 + ")")
+            .call(d3.axisTop(this.goalScale));
 
         // ******* TODO: PART V *******
 
@@ -91,7 +99,7 @@ class Table {
             .data(function (d) {
                 console.log(d);
                 return [{'type': 'aggregate', 'vis': 'text', 'value': d['key']},
-                        {'type': 'aggregate', 'vis': 'goals', 'value': [d['value']['Goals Conceded'],d['value']['Goals Made']] },
+                        {'type': 'aggregate', 'vis': 'goals', 'value': [d['value']['Goals Made'],d['value']['Goals Conceded']] },
                         {'type': 'aggregate', 'vis': 'text', 'value': d['value']['Result']['label']},
                         {'type': 'aggregate', 'vis': 'bar', 'value': d['value']['Wins']},
                         {'type': 'aggregate', 'vis': 'bar', 'value': d['value']['Losses']},
@@ -126,7 +134,37 @@ class Table {
         var text_cells = cells.filter(function (d) {
             return d.vis == 'text';
         })
-          .text(d => d.value);
+            .text(d => d.value);
+
+
+        var goals_cell = cells.filter(function (d) {
+            return d.vis == 'goals';
+        })
+            .append('svg')
+            .attr('width', this.goalWidht)
+            .attr('height', 20);
+
+        goals_cell.append('rect')
+            .attr('class', 'goalBar')
+            .attr('x', d => this.goalScale(Math.min(d.value[0], d.value[1])))    
+            .attr('y', this.bar.height - gs)
+            .attr('width', d => this.goalScale(Math.max(d.value[0], d.value[1]) - Math.min(d.value[0], d.value[1]) - 1))
+            .attr('height', 16)
+            .attr('fill', function (d) {
+                return d.value[0] > d.value[1] ? 'steelblue' : '#be2714';
+            });
+
+        goals_cell.append('circle')
+            .attr('cx', d => this.goalScale(d.value[0]))
+            .attr('cy', this.bar.height - gs/2)
+            .attr('class', 'goalCircle')
+            .attr('fill', 'steelblue');
+
+        goals_cell.append('circle')
+            .attr('cx', d => this.goalScale(d.value[1]))
+            .attr('cy', this.bar.height - gs/2)
+            .attr('class', 'goalCircle')
+            .attr('fill', '#be2714');
 
         //Create table rows
 
