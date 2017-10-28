@@ -85,6 +85,7 @@ class Table {
      */
     updateTable() {
         // ******* TODO: PART III *******
+        
         var tbody = d3.select('#matchTable').select('tbody');
         var rows = tbody.selectAll('tr')
                         .data(this.tableElements);
@@ -97,13 +98,12 @@ class Table {
         var cells = rows
             .selectAll('td')
             .data(function (d) {
-                console.log(d);
-                return [{'type': 'aggregate', 'vis': 'cntrs', 'value': d['key']},
-                        {'type': 'aggregate', 'vis': 'goals', 'value': [d['value']['Goals Made'],d['value']['Goals Conceded']] },
-                        {'type': 'aggregate', 'vis': 'text', 'value': d['value']['Result']['label']},
-                        {'type': 'aggregate', 'vis': 'bar', 'value': d['value']['Wins']},
-                        {'type': 'aggregate', 'vis': 'bar', 'value': d['value']['Losses']},
-                        {'type': 'aggregate', 'vis': 'bar', 'value': d['value']['TotalGames']}
+                return [{'type': d['value']['type'], 'vis': 'cntrs', 'value': d['key']},
+                        {'type': d['value']['type'], 'vis': 'goals', 'value': [d['value']['Goals Made'],d['value']['Goals Conceded']] },
+                        {'type': d['value']['type'], 'vis': 'text', 'value': d['value']['Result']['label']},
+                        {'type': d['value']['type'], 'vis': 'bar', 'value': d['value']['Wins']},
+                        {'type': d['value']['type'], 'vis': 'bar', 'value': d['value']['Losses']},
+                        {'type': d['value']['type'], 'vis': 'bar', 'value': d['value']['TotalGames']}
                 ];
             });
 
@@ -114,7 +114,7 @@ class Table {
             .append('td');
 
         var bar_cells = cells.filter(function (d) {
-            return d.vis == 'bar';
+            return d.vis == 'bar' && d.type == 'aggregate';
         }).append('svg')
           .attrs(this.cell);
 
@@ -135,15 +135,25 @@ class Table {
             return d.vis == 'text';
         }).text(d => d.value);
 
+
+        var t = this;
         cells.filter(function (d) {
             return d.vis == 'cntrs';
         })
           .attr('valign', 'right')
           .attr('color', '#317f19')
-          .text(d => d.value);
+          .text(function (d) {
+            console.log(d);
+            if (d.type == 'aggregate') {
+                return d.value;
+            } else if (d.type == 'game'){
+                return 'x'+ d.value;
+            }
+          })
+          .on('click', function (d, i) { t.updateList(i); t.updateTable();});
 
         var goals_cell = cells.filter(function (d) {
-            return d.vis == 'goals';
+            return d.vis == 'goals' && d.type == 'aggregate';
         })
             .append('svg')
             .attr('width', this.goalWidht)
@@ -151,7 +161,7 @@ class Table {
 
         goals_cell.append('rect')
             .attr('class', 'goalBar')
-            .attr('x', d => this.goalScale(Math.min(d.value[0], d.value[1])))    
+            .attr('x', d => this.goalScale(Math.min(d.value[0], d.value[1])) - 4)    
             .attr('y', this.bar.height - gs)
             .attr('width', d => this.goalScale(Math.max(d.value[0], d.value[1]) - Math.min(d.value[0], d.value[1]) - 1))
             .attr('height', 16)
@@ -160,17 +170,45 @@ class Table {
             });
 
         goals_cell.append('circle')
-            .attr('cx', d => this.goalScale(d.value[0]))
+            .attr('cx', d => this.goalScale(d.value[0]) - 4)
             .attr('cy', this.bar.height - gs/2)
             .attr('class', 'goalCircle')
             .attr('fill', 'steelblue');
 
         goals_cell.append('circle')
-            .attr('cx', d => this.goalScale(d.value[1]))
+            .attr('cx', d => this.goalScale(d.value[1]) - 4)
             .attr('cy', this.bar.height - gs/2)
             .attr('class', 'goalCircle')
             .attr('fill', '#be2714');
 
+        var goals_cell = cells.filter(function (d) {
+            return d.vis == 'goals' && d.type == 'game';
+        })
+            .append('svg')
+            .attr('width', this.goalWidht)
+            .attr('height', 20);
+
+        goals_cell.append('rect')
+            .attr('class', 'goalBar')
+            .attr('x', d => this.goalScale(Math.min(d.value[0], d.value[1])) - 4)    
+            .attr('y', this.bar.height - gs + 4)
+            .attr('width', d => this.goalScale(Math.max(d.value[0], d.value[1]) - Math.min(d.value[0], d.value[1]) - 1))
+            .attr('height', 4)
+            .attr('fill', function (d) {
+                return d.value[0] > d.value[1] ? 'steelblue' : '#be2714';
+            });
+
+        goals_cell.append('circle')
+            .attr('cx', d => this.goalScale(d.value[0]) - 4)
+            .attr('cy', this.bar.height - gs/2)
+            .attr('class', 'goalCircle')
+            .attr('border', '4px steelblue');
+
+        goals_cell.append('circle')
+            .attr('cx', d => this.goalScale(d.value[1]) - 4)
+            .attr('cy', this.bar.height - gs/2)
+            .attr('class', 'goalCircle')
+            .attr('border', '4px #be2714');
         //Create table rows
 
         //Append th elements for the Team Names
@@ -186,7 +224,7 @@ class Table {
 
         //Set the color of all games that tied to light gray
 
-    };
+    }
 
     /**
      * Updates the global tableElements variable, with a row for each row to be rendered in the table.
@@ -194,9 +232,19 @@ class Table {
      */
     updateList(i) {
         // ******* TODO: PART IV *******
-       
+
+        var t = this.tableElements;
         //Only update list for aggregate clicks, not game clicks
-        
+        if(t[i]['value']['type'] == 'aggregate'){
+            if(i == t.length - 1 || t[i+1]['value']['type'] == 'aggregate'){
+                t[i]['value']['games'].forEach(function (d, j) {
+                    t.splice(i+j+1,0,d);
+                });
+            }
+            else{
+                t.splice(i+1,t[i]['value']['games'].length);
+            }
+        }   
     }
 
     /**
