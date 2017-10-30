@@ -173,9 +173,7 @@ class Table {
             .attr('y', this.bar.height - gs)
             .attr('width', d => this.goalScale(Math.max(d.value[0], d.value[1]) - Math.min(d.value[0], d.value[1]) - 1))
             .attr('height', 16)
-            .attr('fill', function (d) {
-                return d.value[0] > d.value[1] ? 'steelblue' : '#be2714';
-            });
+            .attr('fill', function (d) { return d.value[0] > d.value[1] ? 'steelblue' : '#be2714'; });
 
         goals_cell.append('circle')
             .attr('cx', d => this.goalScale(d.value[0]) - 4)
@@ -187,7 +185,7 @@ class Table {
             .attr('cx', d => this.goalScale(d.value[1]) - 4)
             .attr('cy', this.bar.height - gs/2)
             .attr('class', 'goalCircle')
-            .attr('fill', '#be2714');
+            .attr('fill', function (d) { return d.value[0] == d.value[1] ? 'grey' : '#be2714'; });
 
         var goals_cell = cells.filter(function (d) {
             return d.vis == 'goals' && d.type == 'game';
@@ -202,9 +200,7 @@ class Table {
             .attr('y', this.bar.height - gs + 4)
             .attr('width', d => this.goalScale(Math.max(d.value[0], d.value[1]) - Math.min(d.value[0], d.value[1]) - 1))
             .attr('height', 4)
-            .attr('fill', function (d) {
-                return d.value[0] > d.value[1] ? 'steelblue' : '#be2714';
-            });
+            .attr('fill', function (d) { return d.value[0] > d.value[1] ? 'steelblue' : '#be2714'; });
 
         goals_cell.append('circle')
             .attr('cx', d => this.goalScale(d.value[0]) - 4)
@@ -226,7 +222,6 @@ class Table {
                     case 3: return d['value']['Wins'];
                     case 4: return d['value']['Losses'];
                     case 5: return d['value']['TotalGames'];
-
                 }
             }
         d3.select('#head')
@@ -236,13 +231,10 @@ class Table {
                 t.ascending = !t.ascending;
                 tbody.selectAll("tr")
                      .sort(function (a, b) { 
-                        if(t.ascending) {
-                            return d3.ascending(extractValue(a,i), extractValue(b,i));
-                        }
-                        else {
-                            return d3.descending(extractValue(a,i), extractValue(b,i));
-                        }
-                });
+                        return t.ascending 
+                                ? d3.ascending(extractValue(a,i), extractValue(b,i))
+                                : d3.descending(extractValue(a,i), extractValue(b,i));
+                        });
             });
 
 
