@@ -50,6 +50,9 @@ class Table {
                                      .range(['#ece2f0', '#016450']);
         /**For goal Column. Use colors '#cb181d', '#034e7b'  for the range.*/
         this.goalColorScale = null; 
+
+        this.sortHeader = 'Team';
+        this.ascending = true;
     }
 
 
@@ -86,6 +89,8 @@ class Table {
     updateTable() {
         // ******* TODO: PART III *******
         
+        //.data(['Team','Goals','Round/Result','Wins','Losses','Total Games'])
+
         var tbody = d3.select('#matchTable').select('tbody');
         var rows = tbody.selectAll('tr')
                         .data(this.tableElements);
@@ -95,6 +100,7 @@ class Table {
             .enter()
             .append("tr").merge(rows);
 
+    
         var cells = rows
             .selectAll('td')
             .data(function (d) {
@@ -135,7 +141,7 @@ class Table {
             return d.vis == 'text';
         }).text(d => d.value);
 
-
+        console.log('*--------------------');
         var t = this;
         cells.filter(function (d) {
             return d.vis == 'cntrs';
@@ -143,14 +149,16 @@ class Table {
           .attr('valign', 'right')
           .attr('color', '#317f19')
           .text(function (d) {
-            console.log(d);
             if (d.type == 'aggregate') {
                 return d.value;
             } else if (d.type == 'game'){
                 return 'x'+ d.value;
             }
           })
-          .on('click', function (d, i) { t.updateList(i); t.updateTable();});
+          .on('click', function (d, i) { 
+            t.updateList(i); 
+            t.updateTable();
+        });
 
         var goals_cell = cells.filter(function (d) {
             return d.vis == 'goals' && d.type == 'aggregate';
@@ -209,6 +217,35 @@ class Table {
             .attr('cy', this.bar.height - gs/2)
             .attr('class', 'goalCircle')
             .attr('border', '4px #be2714');
+
+        var extractValue = function (d, i) {
+                switch(i){
+                    case 0: return d['key'];
+                    case 1: return d['value']['Goals Made'];
+                    case 2: return d['value']['Result']['label'];
+                    case 3: return d['value']['Wins'];
+                    case 4: return d['value']['Losses'];
+                    case 5: return d['value']['TotalGames'];
+
+                }
+            }
+        d3.select('#head')
+            .selectAll('th')
+            .on("click", function(header, i) {
+                t.collapseList();
+                t.ascending = !t.ascending;
+                tbody.selectAll("tr")
+                     .sort(function (a, b) { 
+                        if(t.ascending) {
+                            return d3.ascending(extractValue(a,i), extractValue(b,i));
+                        }
+                        else {
+                            return d3.descending(extractValue(a,i), extractValue(b,i));
+                        }
+                });
+            });
+
+
         //Create table rows
 
         //Append th elements for the Team Names
@@ -254,7 +291,7 @@ class Table {
     collapseList() {
         
         // ******* TODO: PART IV *******
-
+        this.tableElements = this.tableElements.filter(d => d['value']['type'] == 'aggregate');
     }
 
 
