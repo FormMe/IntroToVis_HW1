@@ -121,7 +121,8 @@ class Table {
 
         var bar_cells = cells.filter(function (d) {
             return d.vis == 'bar' && d.type == 'aggregate';
-        }).append('svg')
+        }).attrs(this.cell)
+          .append('svg')
           .attrs(this.cell);
 
         var cs = this.aggregateColorScale;
@@ -141,7 +142,6 @@ class Table {
             return d.vis == 'text';
         }).text(d => d.value);
 
-        console.log('*--------------------');
         var t = this;
         cells.filter(function (d) {
             return d.vis == 'cntrs';
@@ -226,6 +226,7 @@ class Table {
             }
         d3.select('#head')
             .selectAll('th')
+            .attrs(this.cell)
             .on("click", function(header, i) {
                 t.collapseList();
                 t.ascending = !t.ascending;
