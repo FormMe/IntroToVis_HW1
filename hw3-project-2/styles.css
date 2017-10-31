@@ -120,6 +120,9 @@ header {
     font: 14px sans-serif;
 }
 
+.winner text {
+    font: 14px sans-serif;
+}
 .winner circle {
     fill: #364e74;
 }

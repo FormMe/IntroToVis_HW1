@@ -158,7 +158,10 @@ class Table {
           .on('click', function (d, i) { 
             t.updateList(i); 
             t.updateTable();
-        });
+          })
+          .on('mouseover', function (row) {
+            t.tree.updateTree(row);
+          });
 
         var goals_cell = cells.filter(function (d) {
             return d.vis == 'goals' && d.type == 'aggregate';

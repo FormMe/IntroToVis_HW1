@@ -4,7 +4,7 @@ class Tree {
      * Creates a Tree Object
      */
     constructor() {
-        
+        this.nodes = null;
     }
 
     /**
@@ -35,6 +35,7 @@ class Tree {
 
         // maps the node data to the tree layout
         nodes = treemap(nodes);
+        this.nodes = nodes;
 
         // append the svg object to the body of the page
         // appends a 'group' element to 'svg'
@@ -87,7 +88,16 @@ class Tree {
      */
     updateTree(row) {
         // ******* TODO: PART VII *******
-    
+        var country = row.value;
+        var g = d3.select('#tree');
+        console.log(country);
+        
+        node.append("text")
+          .attr("dy", ".35em")
+          .attr("x", function(d) { return d.children ? -13 : 13; })
+          .style("text-anchor", function(d) { 
+            return d.children ? "end" : "start"; })
+          .text(function(d) { return d.data.name; });
     }
 
     /**
@@ -96,6 +106,9 @@ class Tree {
     clearTree() {
         // ******* TODO: PART VII *******
 
-        // You only need two lines of code for this! No loops! 
+        // You only need two lines of code for this! No loops!        
+        var g = d3.select('#tree');
+        g.selectAll(".link").attr("class", "link");
+        g.selectAll(".node");
     }
 }
