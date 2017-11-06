@@ -47,6 +47,7 @@ class Map {
         // as well as a .silver. These have styling attributes for the two
         // markers.
 
+        var proj = this.projection;
         var path = d3.geoPath().projection(this.projection);
 
         worldcupData.teams_iso.forEach(function (team, i, arr) {
@@ -57,18 +58,23 @@ class Map {
             .attr('class', 'host');
 
         d3.select('#points').select('.gold')
-            .attr('cx', worldcupData.win_pos[0])
-            .attr('cy', worldcupData.win_pos[1])
-            .attr("r", "8");
+            .transition()
+            .duration(1000)
+            .attr("r", "8")
+            .attr("transform", function(d) {
+                console.log(proj([worldcupData.win_pos[0], worldcupData.win_pos[1]]));
+                  return "translate(" + proj([worldcupData.win_pos[0], worldcupData.win_pos[1]]) + ")"
+                });
 
 
-        console.log(worldcupData.ru_pos)
-        console.log(path([-112.0785,33.46764]))
-        d3.select('#points').select('.silver')
-            .attr('cx', worldcupData.ru_pos[0])
-            .attr('cy', worldcupData.ru_pos[1])            
-            .attr('d', path)
-            .attr("r", "8");
+        d3.select('#points').select('.silver')  
+            .transition()
+            .duration(1000)
+            .attr("r", "8")
+            .attr("transform", function(d) {
+                console.log(proj([worldcupData.ru_pos[0], worldcupData.ru_pos[1]]));
+                  return "translate(" + proj([worldcupData.ru_pos[0], worldcupData.ru_pos[1]]) + ")"
+                });;
         // Add a marker for gold/silver medalists
 
     }
