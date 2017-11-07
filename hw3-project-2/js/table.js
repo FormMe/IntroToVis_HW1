@@ -98,7 +98,15 @@ class Table {
             .remove();
         rows = rows
             .enter()
-            .append("tr").merge(rows);
+            .append("tr").merge(rows)            
+          .on('click', function (d, i) { 
+            t.updateList(i); 
+            t.updateTable();
+          })
+          .on('mouseover', function (row) {
+            t.tree.clearTree();
+            t.tree.updateTree(row);
+          });
 
     
         var cells = rows
@@ -154,13 +162,6 @@ class Table {
             } else if (d.type == 'game'){
                 return 'x'+ d.value;
             }
-          })
-          .on('click', function (d, i) { 
-            t.updateList(i); 
-            t.updateTable();
-          })
-          .on('mouseover', function (row) {
-            t.tree.updateTree(row);
           });
 
         var goals_cell = cells.filter(function (d) {

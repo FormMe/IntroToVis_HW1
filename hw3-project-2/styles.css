@@ -53,7 +53,7 @@ tbody tr .game {
 /*}*/
 
 .label{
-    fill: #ffffff;
+    fill: 'black';
     font: 14px sans-serif;
 }
 
@@ -150,7 +150,7 @@ header {
 }
 
 .view {
-    width: 650px;
+    width: 900px;
     padding: 0.5em;
     float: left;
 }

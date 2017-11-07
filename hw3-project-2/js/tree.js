@@ -60,7 +60,7 @@ class Tree {
             .data(nodes.descendants())
           .enter().append("g")
             .attr("class", function(d) { 
-                return (d.data.data.Wins == "0" ? "node" : 'winner') + 
+                return (d.data.data.Wins == "0" ? "node" : 'node winner') + 
                 (d.children ? " node--internal" : " node--leaf"); })
             .attr("transform", function(d) { 
               return "translate(" + d.y + "," + d.x + ")"; });
@@ -86,18 +86,38 @@ class Tree {
      *
      * @param row a string specifying which team was selected in the table.
      */
-    updateTree(row) {
+    updateTree(rows) {
         // ******* TODO: PART VII *******
-        var country = row.value;
-        var g = d3.select('#tree');
-        console.log(country);
-        
-        node.append("text")
-          .attr("dy", ".35em")
-          .attr("x", function(d) { return d.children ? -13 : 13; })
-          .style("text-anchor", function(d) { 
-            return d.children ? "end" : "start"; })
-          .text(function(d) { return d.data.name; });
+         d3.selectAll('.link')
+            .filter(function(d){
+                return d.data.data.Team == rows.key && d.parent.data.data.Team == rows.key;
+               /* if (rows.value.type == 'aggregate'){
+                    
+                } else{
+                    return (d.data.data.Team == rows.key && d.data.data.Opponent == rows.value.Opponent) || (d.data.data.Team == rows.value.Opponent && d.data.data.Opponent == rows.key)
+                }*/
+            })
+            .attr('class', 'link selected')
+
+        d3.selectAll('.node').selectAll('text')
+            .filter(function(d){
+                return d.data.data.Team == rows.key;
+                /*if (rows.value.type == 'aggregate'){
+                } else{
+                    console.log(d)
+                    var r1 = '';
+                    var r2 = '';
+                    if ((Object.keys(d.data).indexOf('children')+1) != 0){
+                        var r1 = d.data.children[0].data.Team;
+                        var r2 = d.data.children[0].data.Opponent;
+                    }
+                    return ((d.data.data.Team == rows.key && d.data.data.Opponent == rows.value.Opponent) || 
+                    (d.data.data.Team == rows.value.Opponent && d.data.data.Opponent == rows.key) ||
+                    (r1 == rows.key && r2 == rows.value.Opponent) ||
+                    (r2 == rows.key && r1 == rows.value.Opponent))
+                }*/
+            })
+            .attr('class', 'selectedLabel')
     }
 
     /**
@@ -107,8 +127,7 @@ class Tree {
         // ******* TODO: PART VII *******
 
         // You only need two lines of code for this! No loops!        
-        var g = d3.select('#tree');
-        g.selectAll(".link").attr("class", "link");
-        g.selectAll(".node");
+        d3.selectAll('.selected').attr('class', 'link');
+        d3.selectAll('.selectedLabel').attr('class', 'label');
     }
 }
