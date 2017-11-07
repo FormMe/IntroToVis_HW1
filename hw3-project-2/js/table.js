@@ -218,11 +218,13 @@ class Table {
             .attr('class', 'goalCircle')
             .attr('border', '4px #be2714');
 
+
+
         var extractValue = function (d, i) {
                 switch(i){
                     case 0: return d['key'];
                     case 1: return d['value']['Goals Made'];
-                    case 2: return d['value']['Result']['label'];
+                    case 2: return d['value']['Result']['ranking'];
                     case 3: return d['value']['Wins'];
                     case 4: return d['value']['Losses'];
                     case 5: return d['value']['TotalGames'];
