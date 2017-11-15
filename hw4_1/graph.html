@@ -20,32 +20,32 @@
   }
 
 </style>
-<label><input type="radio" name="Mode" value="R" checked> Ranking</label>
-<label><input type="radio" name="Mode" value="C" > Coordinates</label>
+<body>
+  <label><input type="radio" name="Mode" value="R" checked> Ranking</label>
+  <label><input type="radio" name="Mode" value="S" > Coordinates</label>
 
-<div id='R'>
-  <body>
-  <form>
-  Ranking:
-    <label><input type="radio" name="Ranking" value="No" checked> No</label>
-    <label><input type="radio" name="Ranking" value="Yes" > Yes</label>
-  </form>
-Rank by: 
-<select id="Rank">
-  <option value="gdp" >GDP</option>
-  <option value="population" selected>Population</option>
-  <option value="life_expectancy">Life Expectancy</option>
-</select>
-</div>
+  <div id='R'>
+    <form>
+    Ranking:
+      <label><input type="radio" name="Ranking" value="No" checked> No</label>
+      <label><input type="radio" name="Ranking" value="Yes" > Yes</label>
+    </form>
+  Rank by: 
+  <select id="Rank">
+    <option value="gdp" >GDP</option>
+    <option value="population" selected>Population</option>
+    <option value="life_expectancy">Life Expectancy</option>
+  </select>
+  </div>
 
-<div id='C' >
-  <body>
-  <form>
-  Coordinates:
-    <label><input type="radio" name="Coordinates" value="lon/lat" checked> Longitude/Latitude</label>
-    <label><input type="radio" name="Coordinates" value="gdp/pop" > GDP/Population</label>
-  </form>
-</div>
+  <div id='S' >
+    <form>
+    Coordinates:
+      <label><input type="radio" name="Coordinates" value="lon/lat" checked> Longitude/Latitude</label>
+      <label><input type="radio" name="Coordinates" value="gdp/pop" > GDP/Population</label>
+    </form>
+  </div>
+  
   <svg id='plot'> </svg>
 </body>
 </html>
