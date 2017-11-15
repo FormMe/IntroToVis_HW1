@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>Homework 4 (part 1)</title>
 <script src="http://d3js.org/d3.v4.min.js"></script>
-<script src="js\simple_layout.js"></script>
+<script src="js\script.js"></script>
 <style>
   .link {
     stroke: gray;
@@ -20,7 +20,11 @@
   }
 
 </style>
-<body>
+<label><input type="radio" name="Mode" value="R" checked> Ranking</label>
+<label><input type="radio" name="Mode" value="C" > Coordinates</label>
+
+<div id='R'>
+  <body>
   <form>
   Ranking:
     <label><input type="radio" name="Ranking" value="No" checked> No</label>
@@ -32,9 +36,16 @@ Rank by:
   <option value="population" selected>Population</option>
   <option value="life_expectancy">Life Expectancy</option>
 </select>
-<div>
-  <svg id='first'> </svg>
 </div>
 
+<div id='C' >
+  <body>
+  <form>
+  Coordinates:
+    <label><input type="radio" name="Coordinates" value="lon/lat" checked> Longitude/Latitude</label>
+    <label><input type="radio" name="Coordinates" value="gdp/pop" > GDP/Population</label>
+  </form>
+</div>
+  <svg id='plot'> </svg>
 </body>
 </html>
