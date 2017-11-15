@@ -61,20 +61,14 @@ class Map {
             .transition()
             .duration(1000)
             .attr("r", "8")
-            .attr("transform", function(d) {
-                console.log(proj([worldcupData.win_pos[0], worldcupData.win_pos[1]]));
-                  return "translate(" + proj([worldcupData.win_pos[0], worldcupData.win_pos[1]]) + ")"
-                });
+            .attr("transform", "translate(" + proj([worldcupData.win_pos[0], worldcupData.win_pos[1]]) + ")");
 
 
         d3.select('#points').select('.silver')  
             .transition()
             .duration(1000)
             .attr("r", "8")
-            .attr("transform", function(d) {
-                console.log(proj([worldcupData.ru_pos[0], worldcupData.ru_pos[1]]));
-                  return "translate(" + proj([worldcupData.ru_pos[0], worldcupData.ru_pos[1]]) + ")"
-                });;
+            .attr("transform", "translate(" + proj([worldcupData.ru_pos[0], worldcupData.ru_pos[1]]) + ")");
         // Add a marker for gold/silver medalists
 
     }
