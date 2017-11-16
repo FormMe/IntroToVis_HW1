@@ -10,6 +10,7 @@
 			switch(mode){
 				case 'R': ranking_layout(); break;
 				case 'S': scatter_layout(); break;
+				case 'C': circular_layout(); break;
 			}
  	}
 
@@ -82,6 +83,31 @@
     	});  		
 		update();
     }
+	function circular_layout() {
+	  var r = Math.min(height, width)/2 - 50;
+
+	  var arc = d3.arc()
+	          .outerRadius(r);
+	  var p = d3.select("#Sort").node().value;
+	  var pie = d3.pie()
+				  .sort(function(a, b) { return a[p] - b[p];})
+			          .value(function(d, i) { 
+			            return 1; 
+			          });
+
+	  data = pie(data).map(function(d, i) {
+	    // Needed to caclulate the centroid
+	    d.innerRadius = r;
+	    d.outerRadius = r;
+
+	    // Building the data object we are going to return
+	    d.data.x = arc.centroid(d)[0]+width/2;
+	    d.data.y = arc.centroid(d)[1]+height/2;
+
+	    return d.data;
+	  })
+	  update();
+	}
 
     function update() {
 		nodes.transition()
@@ -95,16 +121,8 @@
 
 	layout_mode();
 
-	d3.selectAll('input[name="Ranking"]')
-  	  .on("change", function(){
-			ranking_layout();
-	});
-	d3.selectAll('#Rank')
-  	  .on("change", function(){
-			ranking_layout();
-	});
-	d3.selectAll('input[name="Coordinates"]')
-  	  .on("change", function(){
-  	  		scatter_layout();
-	});
+	d3.selectAll('input[name="Ranking"]').on("change",ranking_layout);
+	d3.selectAll('#Rank').on("change", ranking_layout);
+	d3.selectAll('input[name="Coordinates"]').on("change", scatter_layout);
+	d3.selectAll('#Sort').on("change", circular_layout);
 });
