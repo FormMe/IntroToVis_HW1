@@ -86,8 +86,8 @@
 		update(500);
     }
 	function circular_layout() {
-	  var r = Math.min(height, width)/2 - 350;
 
+	  var r = Math.min(height, width)/2 - 350;
 	  var arc = d3.arc()
 	          .outerRadius(r);
 	  var p = d3.select("#Sort").node().value;
@@ -119,13 +119,14 @@
 	    .on("start", function(d) {})
 	    .on("end", function(d) {});*/
 	 var simulation = d3.forceSimulation()
-	            .force("collide",d3.forceCollide(function(d){return d.r}))
+	            .force("collide",d3.forceCollide(20))
 	            .force("charge", d3.forceManyBody())
-	            .force("center", d3.forceCenter(width / 2, height / 2))
-	            .force("y", d3.forceY(0))
-	            .force("x", d3.forceX(0));
+	            .force("center", d3.forceCenter(width * 0.3, height * 0.3))
+	            .force("y", d3.forceY(0).strength(0.2))
+	            .force("x", d3.forceX(0).strength(0.2));
 	function force_layout() {
 	      simulation.nodes(data).on("tick", ticked);
+	      simulation.restart();
 	}
 	function ticked() {
            update(0);
