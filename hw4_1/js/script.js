@@ -18,9 +18,8 @@
 			layout_mode();
 	});
 
-	var margin = {top: 50, bottom: 10, left: 300, right: 40};
-	var width = 900 - margin.left - margin.right;
-	var height = 1500 - margin.top - margin.bottom;
+	var width = 1200;
+	var height = 1200;
 	var nodeRadius = 5; 
 	var svg = d3.select("#plot")
 	            .attr("width", width)
@@ -53,7 +52,7 @@
 		var yScale;
 		if (Ranking != 'No')
 			yScale = d3.scaleLinear()
-				.range([height - 15, 5])
+				.range([height - 15, 10])
 				.domain([d3.min(data, d => d[rank]), d3.max(data, d => d[rank])]);
 		
 		data.forEach(function (d, i) {
@@ -68,12 +67,12 @@
     	var xAxis = mode == 'lon/lat' ? 'longitude': 'population';
     	var yAxis = mode == 'lon/lat' ? 'latitude': 'gdp';
     	var xScale = d3.scaleLinear()
-				.range([10, width-40])
+				.range([10, width-70])
 				.domain([d3.min(data, d => d[xAxis]),
 						 d3.max(data, d => d[xAxis])]);
 
     	var yScale = d3.scaleLinear()
-				.range([10, height-10])
+				.range([height-600, 10])
 				.domain([d3.min(data, d => d[yAxis]),
 						 d3.max(data, d => d[yAxis])]);
 
