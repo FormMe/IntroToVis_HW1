@@ -50,12 +50,11 @@
 
   
     function ranking_layout() {
-  		force.stop();
 		var Ranking = d3.select('input[name="Ranking"]:checked').node().value;
 		var rank = (Ranking == 'No') ? 'No' : d3.select("#Rank").node().value; 
 		var yScale;
 		if (Ranking != 'No')
-			yScale = d3.scale.linear()
+			yScale = d3.scaleLinear()
 				.range([height - 15, 10])
 				.domain([d3.min(data, d => d[rank]), d3.max(data, d => d[rank])]);
 		
@@ -67,16 +66,15 @@
 		update(500);
     }
     function scatter_layout(){
-  		force.stop();
     	var mode = d3.select('input[name="Coordinates"]:checked').node().value;
     	var xAxis = mode == 'lon/lat' ? 'longitude': 'population';
     	var yAxis = mode == 'lon/lat' ? 'latitude': 'gdp';
-    	var xScale = d3.scale.linear()
+    	var xScale = d3.scaleLinear()
 				.range([20, width-70])
 				.domain([d3.min(data, d => d[xAxis]),
 						 d3.max(data, d => d[xAxis])]);
 
-    	var yScale = d3.scale.linear()
+    	var yScale = d3.scaleLinear()
 				.range([height-600, 20])
 				.domain([d3.min(data, d => d[yAxis]),
 						 d3.max(data, d => d[yAxis])]);
@@ -88,13 +86,12 @@
 		update(500);
     }
 	function circular_layout() {
-  	  force.stop();
 	  var r = Math.min(height, width)/2 - 350;
 
-	  var arc = d3.svg.arc()
+	  var arc = d3.arc()
 	          .outerRadius(r);
 	  var p = d3.select("#Sort").node().value;
-	  var pie = d3.layout.pie()
+	  var pie = d3.pie()
 				  .sort(function(a, b) { return a[p] - b[p];})
 			          .value(function(d, i) { 
 			            return 1; 
@@ -114,19 +111,25 @@
 	  update(700);
 	}
 
-	var force = d3.layout.force()
+	/*var force = d3.layout.force()s
 	    .size([width, height])
 	    .charge(-50)
 	    .linkDistance(10)
 	    .on("tick", function(d) {update(150);})
 	    .on("start", function(d) {})
-	    .on("end", function(d) {});
-
+	    .on("end", function(d) {});*/
+	 var simulation = d3.forceSimulation()
+	            .force("collide",d3.forceCollide(function(d){return d.r}))
+	            .force("charge", d3.forceManyBody())
+	            .force("center", d3.forceCenter(width / 2, height / 2))
+	            .force("y", d3.forceY(0))
+	            .force("x", d3.forceX(0));
 	function force_layout() {
-	 force.nodes(data)
-	      .start();
+	      simulation.nodes(data).on("tick", ticked);
 	}
-
+	function ticked() {
+           update(0);
+        };
 
     function update(duration) {
 		nodes.transition()
