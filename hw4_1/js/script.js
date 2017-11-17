@@ -50,6 +50,7 @@
 
   
     function ranking_layout() {
+    	simulation.stop();
 		var Ranking = d3.select('input[name="Ranking"]:checked').node().value;
 		var rank = (Ranking == 'No') ? 'No' : d3.select("#Rank").node().value; 
 		var yScale;
@@ -66,6 +67,7 @@
 		update(500);
     }
     function scatter_layout(){
+    	simulation.stop();
     	var mode = d3.select('input[name="Coordinates"]:checked').node().value;
     	var xAxis = mode == 'lon/lat' ? 'longitude': 'population';
     	var yAxis = mode == 'lon/lat' ? 'latitude': 'gdp';
@@ -86,7 +88,7 @@
 		update(500);
     }
 	function circular_layout() {
-
+      simulation.stop();
 	  var r = Math.min(height, width)/2 - 350;
 	  var arc = d3.arc()
 	          .outerRadius(r);
@@ -119,15 +121,21 @@
 	    .on("start", function(d) {})
 	    .on("end", function(d) {});*/
 	 var simulation = d3.forceSimulation()
-	            .force("collide",d3.forceCollide(20))
+	            .force("collide",d3.forceCollide(15))
 	            .force("charge", d3.forceManyBody())
 	            .force("center", d3.forceCenter(width * 0.3, height * 0.3))
 	            .force("y", d3.forceY(0).strength(0.2))
 	            .force("x", d3.forceX(0).strength(0.2));
+	            
+
 	function force_layout() {
-	      simulation.nodes(data).on("tick", ticked);
-	      simulation.restart();
+	    simulation.stop();
+		simulation.nodes(data)
+				  .on("tick", ticked);
+	    simulation.restart();
+	    simulation.tick();
 	}
+
 	function ticked() {
            update(0);
         };
