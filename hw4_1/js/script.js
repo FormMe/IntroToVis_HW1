@@ -97,38 +97,77 @@
 		update(500);
     }
 
+    function circle_centers() {
+	    var r = Math.min(height, width)/2 - 200;
+	    var arc = d3.arc().outerRadius(r);
+	    var pie = d3.pie().value(function(d, i) { return 1; });
+    	var centers = pie(['Asia','Africa','Americas','Europe','Oceania'])
+					.map(function(d, i) {
+			            d.innerRadius = 0;
+			            d.outerRadius = r;
+			            
+			            d.x = arc.centroid(d)[0] + r + 50;
+			            d.y = arc.centroid(d)[1] + r + 50;
+
+			            return {continent: d.data, x: d.x, y: d.y};
+			        });
+		var yearCenters = {}
+		centers.forEach(function (d) {
+			yearCenters[d.continent] = {x: d.x, y: d.y};
+		});	
+		return yearCenters;
+}
 
 	function circular_layout() {
-      simulation.stop();
+		simulation.stop();
+		var r = Math.min(height, width)/2;
+		var arc = d3.arc().outerRadius(r);
+		var p = d3.select("#Sort").node().value;
 
-	  var r = Math.min(height, width)/2 - 350;
-	  var arc = d3.arc().outerRadius(r);
 
-	  var p = d3.select("#Sort").node().value;
-	  var pie = d3.pie()
-				  .sort(function(a, b) { return a[p] - b[p];})
-			      .value(function(d, i) { return 1; });
+		if(d3.select('input[name="CircleGrouped"]:checked').node() == null){
+			var pie = d3.pie()
+					  .sort(function(a, b) { return a[p] - b[p];})
+				      .value(function(d, i) { return 1; });
 
-	  data = pie(data).map(function(d, i) {
-	    // Needed to caclulate the centroid
-	    d.innerRadius = r;
-	    d.outerRadius = r;
+		  	data = pie(data).map(function(d, i) {
+			    d.innerRadius = 0;
+			    d.outerRadius = r;
 
-	    // Building the data object we are going to return
-	    d.data.x = arc.centroid(d)[0] + r + 50;
-	    d.data.y = arc.centroid(d)[1] + r + 50;
+			    d.data.x = arc.centroid(d)[0] + r - 100;
+			    d.data.y = arc.centroid(d)[1] + r - 100;
 
-	    return d.data;
-	  })
-	  update(700);
+			    return d.data;
+		  	});
+		}
+		else{
+			var r = 150;
+			var arc = d3.arc().outerRadius(r);
+			var pie = d3.pie()
+				      .value(function(d, i) { return 1; });
+
+			var centers = circle_centers();			
+			for (var cont in centers) {
+			    if (centers.hasOwnProperty(cont)) {
+					data = pie(data).map(function(d, i) {
+					    d.innerRadius = 0;
+					    d.outerRadius = r;
+
+					    if (d.data.continent == cont) {
+						    d.data.x = arc.centroid(d)[0] + centers[cont].x;
+						    d.data.y = arc.centroid(d)[1] + centers[cont].y;
+					    }
+					    return d.data;
+				  	});
+			    }
+			}
+		}
+		update(700);
 	}
 
 	function force_layout() {
 	    var groupType = d3.select("#GroupType").node().value;
 	    var yearCenters;
-	    var r = Math.min(height, width)/2 - 200;
-	    var arc = d3.arc().outerRadius(r);
-	    var pie = d3.pie().value(function(d, i) { return 1; });
 
 	    switch(groupType){
 	    	case 'horizontal':
@@ -141,24 +180,10 @@
 		    	}; 
 		    	break;
 	    	case 'circular':
-	    		centers = pie(['Asia','Africa','Americas','Europe','Oceania'])
-	    				.map(function(d, i) {
-				            d.innerRadius = 0;
-				            d.outerRadius = r;
-				            
-				            d.x = arc.centroid(d)[0] + r + 50;
-				            d.y = arc.centroid(d)[1] + r + 50;
-
-				            return {continent: d.data, x: d.x, y: d.y};
-				        });
-				yearCenters = {}
-	    		centers.forEach(function (d) {
-	    			yearCenters[d.continent] = {x: d.x, y: d.y};
-	    		})		
+	    		yearCenters = circle_centers();	
 				break;
 	    }
 		
-		console.log(yearCenters);
     	if (d3.select('input[name="Grouped"]:checked').node() != null) {
 	        simulation.force('x', d3.forceX().strength(0.15)
 						        	.x(function (d) { return yearCenters[d['continent']].x; }));
@@ -194,6 +219,7 @@
 
 	d3.selectAll('input[name="Coordinates"]').on("change", scatter_layout);
 
+	d3.selectAll('input[name="CircleGrouped"]').on("change", circular_layout);
 	d3.selectAll('#Sort').on("change", circular_layout);
 
 	d3.selectAll('input[name="Grouped"]').on("change", force_layout);
