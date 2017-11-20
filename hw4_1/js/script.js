@@ -48,7 +48,15 @@
         .attr('font-size', '10px')
         .text(function(d) { return d.name; });
 
-  
+	var simulation = d3.forceSimulation()
+	    //.force("link", d3.forceLink().id(function(d) { return d.id; }))
+	    .force("charge", d3.forceManyBody().strength(-100))
+	    .force('x', d3.forceX().strength(0.1).x(width*0.3))
+	    .force('y', d3.forceY().strength(0.2).y(height*0.3))
+
+	simulation.nodes(data)
+			  .on("tick", ticked);
+
     function ranking_layout() {
     	simulation.stop();
 		var Ranking = d3.select('input[name="Ranking"]:checked').node().value;
@@ -113,27 +121,23 @@
 	  update(700);
 	}
 
-	/*var force = d3.layout.force()s
-	    .size([width, height])
-	    .charge(-50)
-	    .linkDistance(10)
-	    .on("tick", function(d) {update(150);})
-	    .on("start", function(d) {})
-	    .on("end", function(d) {});*/
-	 var simulation = d3.forceSimulation()
-	            .force("collide",d3.forceCollide(15))
-	            .force("charge", d3.forceManyBody())
-	            .force("center", d3.forceCenter(width * 0.3, height * 0.3))
-	            .force("y", d3.forceY(0).strength(0.2))
-	            .force("x", d3.forceX(0).strength(0.2));
-	            
-
 	function force_layout() {
-	    simulation.stop();
-		simulation.nodes(data)
-				  .on("tick", ticked);
-	    simulation.restart();
-	    simulation.tick();
+		var yearCenters = {
+	        'Asia': { x: width / 5, y: height / 2 },
+	        'Africa': { x: width / 3, y: height / 2 },
+	        'Americas': { x: width / 2, y: height / 2 },
+	        'Europe': { x: 2 * width / 3, y: height / 2 },
+	        'Oceania': { x: 4 * width / 5, y: height / 2 }
+    	}
+        simulation.force('x', d3.forceX()
+        						.strength(0.5)
+					        	.x(function (d) {
+					        		console.log(d)
+					        		return yearCenters[d['continent']].x;
+					        	})
+					    );
+
+        simulation.alpha(1).restart();
 	}
 
 	function ticked() {
