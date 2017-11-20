@@ -97,12 +97,12 @@
 		update(500);
     }
 
-	var r = Math.min(height, width)/2 - 350;
-	var arc = d3.arc()
-	      .outerRadius(r);
 
 	function circular_layout() {
       simulation.stop();
+
+	  var r = Math.min(height, width)/2 - 350;
+	  var arc = d3.arc().outerRadius(r);
 
 	  var p = d3.select("#Sort").node().value;
 	  var pie = d3.pie()
@@ -126,16 +126,18 @@
 	function force_layout() {
 	    var groupType = d3.select("#GroupType").node().value;
 	    var yearCenters;
+	    var r = Math.min(height, width)/2 - 200;
+	    var arc = d3.arc().outerRadius(r);
 	    var pie = d3.pie().value(function(d, i) { return 1; });
 
 	    switch(groupType){
 	    	case 'horizontal':
 	    		yearCenters = {
-			        'Asia': { x: width / 5, y: height / 2 },
-			        'Africa': { x: width / 3, y: height / 2 },
-			        'Americas': { x: width / 2, y: height / 2 },
-			        'Europe': { x: 2 * width / 3, y: height / 2 },
-			        'Oceania': { x: 4 * width / 5, y: height / 2 }
+			        'Asia': { x: width / 5, y: height / 2 - 250},
+			        'Africa': { x: width / 3, y: height / 2 - 250 },
+			        'Americas': { x: width / 2, y: height / 2 - 250 },
+			        'Europe': { x: 2 * width / 3, y: height / 2 - 250 },
+			        'Oceania': { x: 4 * width / 5, y: height / 2 - 250 }
 		    	}; 
 		    	break;
 	    	case 'circular':
@@ -144,8 +146,8 @@
 				            d.innerRadius = 0;
 				            d.outerRadius = r;
 				            
-				            d.x = arc.centroid(d)[0] + width/2;
-				            d.y = arc.centroid(d)[1] + height/2;
+				            d.x = arc.centroid(d)[0] + r + 50;
+				            d.y = arc.centroid(d)[1] + r + 50;
 
 				            return {continent: d.data, x: d.x, y: d.y};
 				        });
@@ -160,6 +162,8 @@
     	if (d3.select('input[name="Grouped"]:checked').node() != null) {
 	        simulation.force('x', d3.forceX().strength(0.15)
 						        	.x(function (d) { return yearCenters[d['continent']].x; }));
+	        simulation.force('y', d3.forceY().strength(0.2)
+						        	.y(function (d) { return yearCenters[d['continent']].y; }));
     	}
     	else{
 		    simulation.force('x', d3.forceX().strength(0.15).x(center.x))
