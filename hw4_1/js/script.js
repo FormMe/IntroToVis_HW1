@@ -24,6 +24,7 @@
 	var width = 1200;
 	var height = 1200;
 	var nodeRadius = 5; 
+	var center = {x: width*0.3, y: width*0.3};
 	var svg = d3.select("#plot")
 	            .attr("width", width)
 	            .attr("height", height);
@@ -51,8 +52,8 @@
 	var simulation = d3.forceSimulation()
 	    //.force("link", d3.forceLink().id(function(d) { return d.id; }))
 	    .force("charge", d3.forceManyBody().strength(-100))
-	    .force('x', d3.forceX().strength(0.1).x(width*0.3))
-	    .force('y', d3.forceY().strength(0.2).y(height*0.3))
+	    .force('x', d3.forceX().strength(0.1).x(center.x))
+	    .force('y', d3.forceY().strength(0.2).y(center.y))
 
 	simulation.nodes(data)
 			  .on("tick", ticked);
@@ -103,9 +104,7 @@
 	  var p = d3.select("#Sort").node().value;
 	  var pie = d3.pie()
 				  .sort(function(a, b) { return a[p] - b[p];})
-			          .value(function(d, i) { 
-			            return 1; 
-			          });
+			      .value(function(d, i) { return 1; });
 
 	  data = pie(data).map(function(d, i) {
 	    // Needed to caclulate the centroid
@@ -129,13 +128,14 @@
 	        'Europe': { x: 2 * width / 3, y: height / 2 },
 	        'Oceania': { x: 4 * width / 5, y: height / 2 }
     	}
-        simulation.force('x', d3.forceX()
-        						.strength(0.5)
-					        	.x(function (d) {
-					        		console.log(d)
-					        		return yearCenters[d['continent']].x;
-					        	})
-					    );
+    	if (d3.select('input[name="Grouped"]:checked').node() != null) {
+	        simulation.force('x', d3.forceX().strength(0.15)
+						        	.x(function (d) { return yearCenters[d['continent']].x; }));
+    	}
+    	else{
+		    simulation.force('x', d3.forceX().strength(0.15).x(center.x))
+		    		   .force('y', d3.forceY().strength(0.2).y(center.y));
+    	}
 
         simulation.alpha(1).restart();
 	}
@@ -158,6 +158,7 @@
 
 	d3.selectAll('input[name="Ranking"]').on("change",ranking_layout);
 	d3.selectAll('input[name="Coordinates"]').on("change", scatter_layout);
+	d3.selectAll('input[name="Grouped"]').on("change", force_layout);
 	d3.selectAll('#Rank').on("change", ranking_layout);
 	d3.selectAll('#Sort').on("change", circular_layout);
 });
