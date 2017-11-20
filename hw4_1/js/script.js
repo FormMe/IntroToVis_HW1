@@ -96,11 +96,14 @@
     	});  		
 		update(500);
     }
+
+	var r = Math.min(height, width)/2 - 350;
+	var arc = d3.arc()
+	      .outerRadius(r);
+
 	function circular_layout() {
       simulation.stop();
-	  var r = Math.min(height, width)/2 - 350;
-	  var arc = d3.arc()
-	          .outerRadius(r);
+
 	  var p = d3.select("#Sort").node().value;
 	  var pie = d3.pie()
 				  .sort(function(a, b) { return a[p] - b[p];})
@@ -121,13 +124,39 @@
 	}
 
 	function force_layout() {
-		var yearCenters = {
-	        'Asia': { x: width / 5, y: height / 2 },
-	        'Africa': { x: width / 3, y: height / 2 },
-	        'Americas': { x: width / 2, y: height / 2 },
-	        'Europe': { x: 2 * width / 3, y: height / 2 },
-	        'Oceania': { x: 4 * width / 5, y: height / 2 }
-    	}
+	    var groupType = d3.select("#GroupType").node().value;
+	    var yearCenters;
+	    var pie = d3.pie().value(function(d, i) { return 1; });
+
+	    switch(groupType){
+	    	case 'horizontal':
+	    		yearCenters = {
+			        'Asia': { x: width / 5, y: height / 2 },
+			        'Africa': { x: width / 3, y: height / 2 },
+			        'Americas': { x: width / 2, y: height / 2 },
+			        'Europe': { x: 2 * width / 3, y: height / 2 },
+			        'Oceania': { x: 4 * width / 5, y: height / 2 }
+		    	}; 
+		    	break;
+	    	case 'circular':
+	    		centers = pie(['Asia','Africa','Americas','Europe','Oceania'])
+	    				.map(function(d, i) {
+				            d.innerRadius = 0;
+				            d.outerRadius = r;
+				            
+				            d.x = arc.centroid(d)[0] + width/2;
+				            d.y = arc.centroid(d)[1] + height/2;
+
+				            return {continent: d.data, x: d.x, y: d.y};
+				        });
+				yearCenters = {}
+	    		centers.forEach(function (d) {
+	    			yearCenters[d.continent] = {x: d.x, y: d.y};
+	    		})		
+				break;
+	    }
+		
+		console.log(yearCenters);
     	if (d3.select('input[name="Grouped"]:checked').node() != null) {
 	        simulation.force('x', d3.forceX().strength(0.15)
 						        	.x(function (d) { return yearCenters[d['continent']].x; }));
@@ -157,8 +186,12 @@
 	layout_mode();
 
 	d3.selectAll('input[name="Ranking"]').on("change",ranking_layout);
-	d3.selectAll('input[name="Coordinates"]').on("change", scatter_layout);
-	d3.selectAll('input[name="Grouped"]').on("change", force_layout);
 	d3.selectAll('#Rank').on("change", ranking_layout);
+
+	d3.selectAll('input[name="Coordinates"]').on("change", scatter_layout);
+
 	d3.selectAll('#Sort').on("change", circular_layout);
+
+	d3.selectAll('input[name="Grouped"]').on("change", force_layout);
+	d3.selectAll('#GroupType').on("change", force_layout);
 });
