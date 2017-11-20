@@ -40,23 +40,23 @@ class YearChart {
      *
      * @param party an ID for the party that is being referred to.
      */
-    chooseClass (data) {
-        if (data == "R") {
-            return "yearChart republican";
-        }
-        else if (data == "D") {
-            return "yearChart democrat";
-        }
-        else if (data == "I") {
-            return "yearChart independent";
-        }
-    }
+
 
     /**
      * Creates a chart with circles representing each election year, populates text content and other required elements for the Year Chart
      */
     update () {
-
+        function chooseClass (data) {
+            if (data == "R") {
+                return "yearChart republican";
+            }
+            else if (data == "D") {
+                return "yearChart democrat";
+            }
+            else if (data == "I") {
+                return "yearChart independent";
+            }
+        }
         //Domain definition for global color scale
         let domain = [-60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60];
 
@@ -70,6 +70,12 @@ class YearChart {
 
        // ******* TODO: PART I *******
 
+       var svg = this.svg;
+       console.log(this.electionWinners);
+       svg.data(this.electionWinners)
+          .enter()
+          .append('circle')
+          .attr('class', d => chooseClass(d['PARTY']));
     // Create the chart by adding circle elements representing each election year
     //The circles should be colored based on the winning party for that year
     //HINT: Use the .yearChart class to style your circle elements
