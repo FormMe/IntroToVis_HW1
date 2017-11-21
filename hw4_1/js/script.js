@@ -1,5 +1,5 @@
 
- d3.json("https://raw.githubusercontent.com/avt00/dvcourse/master/countries_2012.json", function(error, data){
+ d3.json("data/countries_1995_2012.json", function(error, data){
 
  	function layout_mode() {
  		var mode = d3.select('input[name="Mode"]:checked').node().value;
@@ -28,13 +28,43 @@
 	var svg = d3.select("#plot")
 	            .attr("width", width)
 	            .attr("height", height);
+   	
+	var graph = {nodes: [], links: []};
 
-    data.forEach(function (d, i) {
-    	d.x = 10; d.y = 0;
-    })
+    var selectYear = 2012;
+    graph.nodes = data.map(function (d) {
+    	var year = d.years.find(p => p.year = selectYear);
+    	return {
+	        continent: d.continent,
+	        name: d.name,
+	        alpha2_code: d.alpha2_code,
+	        country_id: d.country_id,
+	        latitude: d.latitude,
+	        longitude: d.longitude,
+	        gdp: year.gdp,
+	        life_expectancy: year.life_expectancy,
+	        population: year.population,
+	        top_partners: year.top_partners,
+	        x: 0,
+	        y: 0
+    	}
+    });
+
+    graph.nodes.forEach(function (d) {
+    	d.top_partners.forEach(function (p) {
+    		var t = graph.nodes.find(f => f.country_id == p.country_id);
+    		graph.links.push({"source": d, "target": t})
+    	})
+    });
+
+	var link = svg.selectAll(".link")
+	          .data(graph.links)
+	          .enter()
+	          .append("line")
+	          .attr("class", "link");
 
 	var nodes = svg.selectAll('.node')
-	              .data(data)
+	              .data(graph.nodes)
 	            .enter()
 	              .append("g")
 	              .attr("class", "node");
@@ -55,8 +85,11 @@
 	    .force('x', d3.forceX().strength(0.1).x(center.x))
 	    .force('y', d3.forceY().strength(0.2).y(center.y))
 
-	simulation.nodes(data)
+	simulation.nodes(graph.nodes)
 			  .on("tick", ticked);
+
+   /* simulation.force("link").strength(0)
+        .links(graph.links);*/
 
     function ranking_layout() {
     	simulation.stop();
@@ -66,9 +99,9 @@
 		if (Ranking != 'No')
 			yScale = d3.scaleLinear()
 				.range([height - 15, 10])
-				.domain([d3.min(data, d => d[rank]), d3.max(data, d => d[rank])]);
+				.domain([d3.min(graph.nodes, d => d[rank]), d3.max(graph.nodes, d => d[rank])]);
 		
-		data.forEach(function (d, i) {
+		graph.nodes.forEach(function (d, i) {
 	    		d.x = 10;
 		  		d.y = rank =='No'? 5 + 2*i*nodeRadius
 		  						 : 5 + yScale(d[rank]);	  		
@@ -82,15 +115,15 @@
     	var yAxis = mode == 'lon/lat' ? 'latitude': 'gdp';
     	var xScale = d3.scaleLinear()
 				.range([20, width-70])
-				.domain([d3.min(data, d => d[xAxis]),
-						 d3.max(data, d => d[xAxis])]);
+				.domain([d3.min(graph.nodes, d => d[xAxis]),
+						 d3.max(graph.nodes, d => d[xAxis])]);
 
     	var yScale = d3.scaleLinear()
 				.range([height-600, 20])
-				.domain([d3.min(data, d => d[yAxis]),
-						 d3.max(data, d => d[yAxis])]);
+				.domain([d3.min(graph.nodes, d => d[yAxis]),
+						 d3.max(graph.nodes, d => d[yAxis])]);
 
-    	data.forEach(function (d, i) {
+    	graph.nodes.forEach(function (d, i) {
 	  		d.x = xScale(d[xAxis]);	  	
 	  		d.y = yScale(d[yAxis]);	  	
     	});  		
@@ -130,7 +163,7 @@
 					  .sort(function(a, b) { return a[p] - b[p];})
 				      .value(function(d, i) { return 1; });
 
-		  	data = pie(data).map(function(d, i) {
+		  	graph.nodes = pie(graph.nodes).map(function(d, i) {
 			    d.innerRadius = 0;
 			    d.outerRadius = r;
 
@@ -150,7 +183,7 @@
 			var centers = circle_centers();			
 			for (var cont in centers) {
 			    if (centers.hasOwnProperty(cont)) {
-					data = pie(data).map(function(d, i) {
+					graph.nodes = pie(graph.nodes).map(function(d, i) {
 					    d.innerRadius = 0;
 					    d.outerRadius = r;
 
@@ -204,6 +237,13 @@
         };
 
     function update(duration) {
+		link.transition()
+			.duration(duration)
+			.attr("x1", function(d) { return d.target.x; })
+			.attr("y1", function(d) { return d.target.y; })
+			.attr("x2", function(d) { return d.source.x; })
+			.attr("y2", function(d) { return d.source.y; });
+
 		nodes.transition()
 		  	.duration(duration)
 	      	.attr("transform", function(d, i) { 
