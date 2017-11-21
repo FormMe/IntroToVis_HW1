@@ -25,7 +25,7 @@ class YearChart {
 
         //fetch the svg bounds
         this.svgBounds = divyearChart.node().getBoundingClientRect();
-        this.svgWidth = this.svgBounds.width - this.margin.left - this.margin.right;
+        this.svgWidth = this.svgBounds.width*1 - this.margin.left - this.margin.right;
         this.svgHeight = 100;
 
         //add the svg to the div
@@ -70,12 +70,53 @@ class YearChart {
 
        // ******* TODO: PART I *******
 
-       var svg = this.svg;
-       console.log(this.electionWinners);
-       svg.data(this.electionWinners)
-          .enter()
-          .append('circle')
-          .attr('class', d => chooseClass(d['PARTY']));
+       var data = this.electionWinners;
+       var svg = d3.select('#year-chart')
+                   .select('svg');
+
+       var xScale = d3.scaleLinear()
+                      .domain([d3.min(data, d => d.YEAR), d3.max(data, d => d.YEAR)])
+                      .range([30,this.svgWidth - 30]);
+
+       svg.append('line')
+          .attr("x1", 0)
+          .attr("y1", this.svgHeight/2)
+          .attr("x2", this.svgWidth )
+          .attr("y2", this.svgHeight/2)
+          .style("stroke-dasharray", ("2, 2"))
+          .attr('stroke', 'black');
+
+       var yearAxis = svg.selectAll('.yearChart')
+                  .data(data)
+                .enter()
+                  .append("g")
+                  .attr("class", "yearChart");
+
+        yearAxis.append("circle")
+            .attr("r", '10') 
+            .attr('class', function (d) {
+              return chooseClass(d['PARTY']);
+            })
+           .attr("transform", function(d, i) { 
+                    return "translate("+ xScale(d.YEAR) + ",50)"; 
+                  });
+
+        yearAxis.append("text")
+            .attr("dy", "75")
+            .attr("dx", d => xScale(d.YEAR))
+            .attr('class', 'yeartext') 
+            .text(function(d) { return d.YEAR; });
+        
+        yearAxis.on('click', function (d) {
+            yearAxis.selectAll('circle')
+                    .classed('selected', false)
+                    .classed('highlighted', false);
+            d3.select(this)
+              .select('circle')
+              .classed('selected', true)
+              .classed('highlighted', true);
+        })
+
     // Create the chart by adding circle elements representing each election year
     //The circles should be colored based on the winning party for that year
     //HINT: Use the .yearChart class to style your circle elements

@@ -19,10 +19,18 @@ h1 {
     stroke: #FFF;
     stroke-width: 4;
 }
+.dotted {
+  border:none;
+  border-top:1px dotted #f00;
+  color:#fff;
+  background-color:#fff;
+  height:1px;
+  width:50%;
+}
 
 .yeartext, .tilestext, .brushtext{
     text-anchor:middle;
-    font-size: 24px;
+    font-size: 16px;
     fill: #565656;
     stroke-width: 0.1px;
     /*stroke: #e5e5e5;*/
@@ -96,7 +104,7 @@ h1 {
 }
 
 .highlighted{
-    stroke: #404040;;
+    stroke: #404040;
     stroke-width:4;
 }
 
@@ -107,7 +115,7 @@ h1 {
 .selected{
     stroke: #404040;;
     stroke-width:4;
-    r:25px;
+    r:14px;
 }
 
 
