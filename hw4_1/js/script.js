@@ -144,6 +144,7 @@
 			var r = 150;
 			var arc = d3.arc().outerRadius(r);
 			var pie = d3.pie()
+					  .sort(function(a, b) { return a[p] - b[p];})
 				      .value(function(d, i) { return 1; });
 
 			var centers = circle_centers();			
@@ -186,8 +187,8 @@
 		
     	if (d3.select('input[name="Grouped"]:checked').node() != null) {
 	        simulation.force('x', d3.forceX().strength(0.15)
-						        	.x(function (d) { return yearCenters[d['continent']].x; }));
-	        simulation.force('y', d3.forceY().strength(0.2)
+						        	.x(function (d) { return yearCenters[d['continent']].x; }))
+	        		  .force('y', d3.forceY().strength(0.2)
 						        	.y(function (d) { return yearCenters[d['continent']].y; }));
     	}
     	else{
