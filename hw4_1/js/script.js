@@ -79,6 +79,22 @@
         .attr('font-size', '10px')
         .text(function(d) { return d.name; });
 
+    nodes.on('mouseover', function (country) {
+	    	nodes.attr('opacity', 0.2);
+	    	d3.select(this).attr('opacity', 1);
+	    	nodes.filter(function (d) {
+	    		return country.top_partners.find(e => e.country_id == d.country_id) != undefined;
+	    	}).attr('opacity', 1);
+
+	    	link.filter(function (d) {
+	    		return d.source.name == country.name;
+	    	}).attr('class', 'link-lighted').raise();	    	
+    })
+    	.on('mouseout', function (country) {    		
+    		nodes.attr('opacity', 1);
+    		link.attr('class', 'link').lower();
+    	});
+
 	var simulation = d3.forceSimulation()
 	    //.force("link", d3.forceLink().id(function(d) { return d.id; }))
 	    .force("charge", d3.forceManyBody().strength(-100))
