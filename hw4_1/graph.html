@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Homework 4 (part 1)</title>
-<script src="http://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="js\script.js"></script>
 <style>
   .link {
-    stroke: gray;
-    stroke-width: .8px;
+    stroke: darkgray;
+    stroke-width: .20px;
+  }
+  .link-lighted {
+    stroke: black;
+    stroke-width: .50px;
   }
 
   .node {
@@ -53,8 +57,14 @@
         <option value="gdp" >GDP</option>
         <option value="population" selected>Population</option>
       </select>
+      <label><input type="checkbox" name="CircleGrouped" value="grouped"> To group</label>      
   </div>
   <div id='G'>
+      <label><input type="checkbox" name="Grouped" value="grouped"> To group</label>
+      <select id="GroupType">
+        <option value="horizontal" selected>Horizontal</option>
+        <option value="circular">Circular</option>
+      </select>
   </div>
 
   <svg id='plot'> </svg>
