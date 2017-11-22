@@ -113,7 +113,7 @@
 		  		d.y = rank =='No'? 5 + 2*i*nodeRadius
 		  						 : 5 + yScale(d[rank]);	  		
 	    	})
-		update(500);
+		update(1000);
     }
     function scatter_layout(){
     	simulation.stop();
@@ -134,7 +134,7 @@
 	  		d.x = xScale(d[xAxis]);	  	
 	  		d.y = yScale(d[yAxis]);	  	
     	});  		
-		update(500);
+		update(1000);
     }
 
     function circle_centers() {
