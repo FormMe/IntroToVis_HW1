@@ -51,10 +51,38 @@ class ElectoralVoteChart {
    update (electionResult, colorScale){
 
           // ******* TODO: PART II *******
+          var Gdata = d3.nest()
+                .key(function(d) { return d['State_Winner']; })
+                .rollup(function(v) { 
+                    return v.map(function (state) {
+                        return {
+                                'State_Winner': state['State_Winner'],
+                                'Total_EV': state['Total_EV'],
+                                'RD_Difference': state['RD_Difference']
+                            }
+                        }
+                    ).sort(function (a, b) { return a['RD_Difference'] - b['RD_Difference']; })
+                }) 
+                .entries(electionResult);
 
-    //Group the states based on the winning party for the state;
-    //then sort them based on the margin of victory
+        var data = [];
+        Gdata.forEach(function (states) {
+            data = data.concat(states.value);
+        });
 
+
+
+        var xAxis = d3.scaleLinear()
+            .rangeRound([20, this.svgWidth - 20]);
+        
+        var svg = d3.select("#electoral-vote").select('svg');
+
+        svg.selectAll('rect')
+           .data(data)
+           .enter()
+           .append('g')
+           .append('rect');
+        console.log(Gdata, data);
     //Create the stacked bar chart.
     //Use the global color scale to color code the rectangles.
     //HINT: Use .electoralVotes class to style your bars.

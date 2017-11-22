@@ -67,10 +67,11 @@ class YearChart {
         this.colorScale = d3.scaleQuantile()
             .domain(domain)
             .range(range);
-
+        var ColorScale = this.colorScale;
        // ******* TODO: PART I *******
 
        var data = this.electionWinners;
+       var EVchart = this.electoralVoteChart;
        var svg = d3.select('#year-chart')
                    .select('svg');
 
@@ -102,7 +103,7 @@ class YearChart {
                   });
 
         yearAxis.append("text")
-            .attr("dy", "75")
+            .attr("dy", "90")
             .attr("dx", d => xScale(d.YEAR))
             .attr('class', 'yeartext') 
             .text(function(d) { return d.YEAR; });
@@ -115,25 +116,11 @@ class YearChart {
               .select('circle')
               .classed('selected', true)
               .classed('highlighted', true);
-        })
 
-    // Create the chart by adding circle elements representing each election year
-    //The circles should be colored based on the winning party for that year
-    //HINT: Use the .yearChart class to style your circle elements
-    //HINT: Use the chooseClass method to choose the color corresponding to the winning party.
-
-    //Append text information of each year right below the corresponding circle
-    //HINT: Use .yeartext class to style your text elements
-
-    //Style the chart by adding a dashed line that connects all these years.
-    //HINT: Use .lineChart to style this dashed line
-
-    //Clicking on any specific year should highlight that circle and  update the rest of the visualizations
-    //HINT: Use .highlighted class to style the highlighted circle
-
-    //Election information corresponding to that year should be loaded and passed to
-    // the update methods of other visualizations
-
+            d3.csv("data/Year_Timeline_" + d.YEAR + ".csv", function (error, electionResult) {
+              EVchart.update(electionResult, ColorScale);
+            });
+        });
 
     //******* TODO: EXTRA CREDIT *******
 
