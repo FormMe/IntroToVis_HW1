@@ -16,11 +16,6 @@
 			}
  	}
 
-	d3.selectAll('input[name="Mode"]')
-  	  .on("change", function(){
-			layout_mode();
-	});
-
 	var width = 1200;
 	var height = 1200;
 	var nodeRadius = 5; 
@@ -88,24 +83,20 @@
 
 	    	link.filter(function (d) {
 	    		return d.source.name == country.name;
-	    	}).attr('class', 'link-lighted').raise();	    	
-    })
+	    	}).attr('class', 'link-lighted');	    	
+    	})
     	.on('mouseout', function (country) {    		
     		nodes.attr('opacity', 1);
-    		link.attr('class', 'link').lower();
+    		link.attr('class', 'link');
     	});
 
 	var simulation = d3.forceSimulation()
-	    //.force("link", d3.forceLink().id(function(d) { return d.id; }))
 	    .force("charge", d3.forceManyBody().strength(-100))
 	    .force('x', d3.forceX().strength(0.1).x(center.x))
 	    .force('y', d3.forceY().strength(0.2).y(center.y))
 
 	simulation.nodes(graph.nodes)
 			  .on("tick", ticked);
-
-   /* simulation.force("link").strength(0)
-        .links(graph.links);*/
 
     function ranking_layout() {
     	simulation.stop();
@@ -270,6 +261,8 @@
 
 
 	layout_mode();
+
+	d3.selectAll('input[name="Mode"]').on("change", layout_mode);
 
 	d3.selectAll('input[name="Ranking"]').on("change",ranking_layout);
 	d3.selectAll('#Rank').on("change", ranking_layout);
