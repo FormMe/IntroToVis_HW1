@@ -28,17 +28,7 @@ class ElectoralVoteChart {
      *
      * @param party an ID for the party that is being referred to.
      */
-    chooseClass (party) {
-        if (party == "R"){
-            return "republican";
-        }
-        else if (party == "D"){
-            return "democrat";
-        }
-        else if (party == "I"){
-            return "independent";
-        }
-    }
+
 
 
     /**
@@ -49,7 +39,17 @@ class ElectoralVoteChart {
      */
 
    update (electionResult, colorScale){
-
+	    function chooseClass (party) {
+	        if (party == "R"){
+	            return "republican";
+	        }
+	        else if (party == "D"){
+	            return "democrat";
+	        }
+	        else if (party == "I"){
+	            return "independent";
+	        }
+	    }
           // ******* TODO: PART II *******
           var Gdata = d3.nest()
                 .key(function(d) { return d['State_Winner']; })
@@ -77,6 +77,7 @@ class ElectoralVoteChart {
         
         var svg = d3.select("#electoral-vote").select('svg');
 
+
         var bias = 0;
         var width = this.svgWidth - 20;
         svg.selectAll('rect')
@@ -94,9 +95,28 @@ class ElectoralVoteChart {
            .attr('class', 'electoralVotes')
            .attr('fill', d => colorScale(d.RD_Difference));
         console.log(Gdata, data);
-    //Create the stacked bar chart.
-    //Use the global color scale to color code the rectangles.
-    //HINT: Use .electoralVotes class to style your bars.
+
+
+        var ev = Gdata.map(function (p) {
+        	return {
+        		'party': p.key,
+        		'ev_count': d3.sum(p.value, s => s['Total_EV'])
+        	}
+        } );
+
+        svg.selectAll('text')
+           	.data(ev)
+           	.enter()
+           	.append('text')
+           	.attr("dy", "90")
+			.attr("dx", function (d) {
+				console.log(d);
+				return xAxis(d.ev_count)/width;
+			})
+			.attr('class', function (d) {
+				return 'electoralVoteText ' + chooseClass(d.party);
+			})
+			.text(function(d) { return d.ev_count; });
 
     //Display total count of electoral votes won by the Democrat and Republican party
     //on top of the corresponding groups of bars.
