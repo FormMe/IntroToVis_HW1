@@ -102,15 +102,14 @@ class ElectoralVoteChart {
         		'party': p.key,
         		'ev_count': d3.sum(p.value, s => s['Total_EV'])
         	}
-        } );
+        })
 
         svg.selectAll('text')
            	.data(ev)
            	.enter()
            	.append('text')
            	.attr("dy", "90")
-			.attr("dx", function (d) {
-				console.log(d);
+			.attr("dx", function (d) {				
 				return xAxis(d.ev_count)/width;
 			})
 			.attr('class', function (d) {
@@ -118,6 +117,20 @@ class ElectoralVoteChart {
 			})
 			.text(function(d) { return d.ev_count; });
 
+
+		svg.append('text')
+			  .attr("dy", "35")
+			  .attr("dx", width/2)	
+			  .attr('class', 'electoralVotesNote')
+			  .text('Electoral Vote (270 needed to win)');
+
+		svg.append('line')
+          .attr("x1", width/2)
+          .attr("x2", width/2)
+          .attr("y1", 40)
+          .attr("y2", 90)
+          .attr('stroke', 'black');
+			  
     //Display total count of electoral votes won by the Democrat and Republican party
     //on top of the corresponding groups of bars.
     //HINT: Use the .electoralVoteText class to style your text elements;  Use this in combination with
