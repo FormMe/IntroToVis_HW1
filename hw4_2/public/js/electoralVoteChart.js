@@ -102,7 +102,6 @@ class ElectoralVoteChart {
            .attr('width', d => xAxis(d.Total_EV)/width)
            .attr('class', 'electoralVotes')
            .attr('fill', function (d) { 
-           console.log(d);            
              return d['State_Winner'] != 'I' ? colorScale(d.RD_Difference) : '#45AD6A';
            });
 
@@ -122,8 +121,17 @@ class ElectoralVoteChart {
          	.append('text')
           .merge(counts)
          	.attr("dy", "90")
-    			.attr("dx", function (d) {				
-    				return xAxis(d.ev_count)/width;
+    			.attr("dx", function (d, i) {			
+            if(d.party == 'I') return 0;
+            if(i == ev.length - 1){
+              return width+20;
+            }
+            else{
+              if (ev[i+1].party != 'I')
+                return 0;
+              else
+                return xAxis(ev[i+1].ev_count)/width;
+            }
     			})
     			.attr('class', function (d) {
     				return 'electoralVoteText ' + chooseClass(d.party);
@@ -146,21 +154,6 @@ class ElectoralVoteChart {
 
         this.treshold = true;
       }
-
-			  
-    //Display total count of electoral votes won by the Democrat and Republican party
-    //on top of the corresponding groups of bars.
-    //HINT: Use the .electoralVoteText class to style your text elements;  Use this in combination with
-    // chooseClass to get a color based on the party wherever necessary
-
-    //Display a bar with minimal width in the center of the bar chart to indicate the 50% mark
-    //HINT: Use .middlePoint class to style this bar.
-
-    //Just above this, display the text mentioning the total number of electoral votes required
-    // to win the elections throughout the country
-    //HINT: Use .electoralVotesNote class to style this text element
-
-    //HINT: Use the chooseClass method to style your elements based on party wherever necessary.
 
     //******* TODO: PART V *******
     //Implement brush on the bar chart created above.
