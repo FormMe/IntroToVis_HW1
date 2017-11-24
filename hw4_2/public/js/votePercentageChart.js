@@ -103,14 +103,12 @@ class VotePercentageChart {
    			 if(parties[0].nominee == "")
    			 	parties.splice(0,1);
 
-	        var xAxis = d3.scaleLinear()
-	            .rangeRound([10, this.svgWidth - 10]);
-
         	var svg = d3.select("#votes-percentage").select('svg');
 
-	        var bias = 0;
+        	var sum = d3.sum(parties, d => d['percentage']);
 	        var width = this.svgWidth - 20;
 
+	        var bias = 0;
 	        var bars = svg.selectAll('rect')
 	                      .data(parties);
 	        bars.exit().remove();
@@ -121,11 +119,11 @@ class VotePercentageChart {
 	           .attr('y', 50)
 	           .attr('x', function (d) {
 	           		var cur = bias;
-	           		bias += xAxis(d.percentage)/width*5.5;
+	           		bias += d.percentage * width / sum;
 	           	 	return cur;
 	           })
 	           .attr('height', 30)
-	           .attr('width', d =>  xAxis(d.percentage)/width*5.5)
+	           .attr('width', d =>  d.percentage * width / sum)
 	           .attr('class', function (d) {
 	           	 return 'votesPercentage ' + chooseClass(d.party)
 	           });
@@ -143,10 +141,7 @@ class VotePercentageChart {
 					          return width+20;
 					        }
 					        else{
-					          if (parties[i+1].party != 'I')
-					            return 0;
-					          else
-					            return xAxis(parties[i+1].percentage)/width;
+					            return parties[i+1].percentage * width / sum;
 					        }
 						})
 						.attr('class', function (d) {
@@ -170,7 +165,7 @@ class VotePercentageChart {
 					          return width+20;
 					        }
 					        else{
-					            return xAxis(parties[i-1].percentage)/width;
+					            return parties[i+1].percentage * width / sum;
 					        }
 						})
 						.attr('class', function (d) {

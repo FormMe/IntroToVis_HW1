@@ -77,14 +77,13 @@ class ElectoralVoteChart {
           }
         });
 
-        var xAxis = d3.scaleLinear()
-            .rangeRound([10, this.svgWidth - 10]);
         
         var svg = d3.select("#electoral-vote").select('svg');
 
+        var sum = d3.sum(data, d => d['Total_EV']);
+        var width = this.svgWidth - 20;
 
         var bias = 0;
-        var width = this.svgWidth - 20;
         var bars = svg.selectAll('rect')
                       .data(data);
         bars.exit().remove();
@@ -95,11 +94,11 @@ class ElectoralVoteChart {
            .attr('y', 50)
            .attr('x', function (d) {
            		var cur = bias;
-           		bias += xAxis(d.Total_EV)/width;
+           		bias += d.Total_EV * width / sum;
            	 	return cur;
            })
            .attr('height', 30)
-           .attr('width', d => xAxis(d.Total_EV)/width)
+           .attr('width', d => d.Total_EV * width / sum)
            .attr('class', 'electoralVotes')
            .attr('fill', function (d) { 
              return d['State_Winner'] != 'I' ? colorScale(d.RD_Difference) : '#45AD6A';
@@ -124,13 +123,13 @@ class ElectoralVoteChart {
     			.attr("dx", function (d, i) {			
             if(d.party == 'I') return 0;
             if(i == ev.length - 1){
-              return width+20;
+              return width;
             }
             else{
               if (ev[i+1].party != 'I')
                 return 0;
               else
-                return xAxis(ev[i+1].ev_count)/width;
+                return ev[i+1].ev_count * width / sum;
             }
     			})
     			.attr('class', function (d) {
