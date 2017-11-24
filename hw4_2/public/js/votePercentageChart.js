@@ -136,12 +136,12 @@ class VotePercentageChart {
 			      .merge(counts)
 			     	.attr("dy", "40")
 						.attr("dx", function (d, i) {			
-					        if(d.party == 'I') return 0;
+					        if(i == 0) return 0;
 					        if(i == parties.length - 1){
-					          return width+20;
+					          return width;
 					        }
 					        else{
-					            return parties[i+1].percentage * width / sum;
+					            return (parties[i-1].percentage + d.percentage/2) * width / sum;
 					        }
 						})
 						.attr('class', function (d) {
@@ -162,10 +162,10 @@ class VotePercentageChart {
 							console.log(d, i);		
 					        if(i == 0) return 0;
 					        if(i == parties.length - 1){
-					          return width+20;
+					          return width;
 					        }
 					        else{
-					            return parties[i+1].percentage * width / sum;
+					            return (parties[i-1].percentage + d.percentage/2)* width / sum;
 					        }
 						})
 						.attr('class', function (d) {
