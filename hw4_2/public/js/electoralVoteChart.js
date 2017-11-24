@@ -73,15 +73,26 @@ class ElectoralVoteChart {
 
 
         var xAxis = d3.scaleLinear()
-            .rangeRound([20, this.svgWidth - 20]);
+            .rangeRound([10, this.svgWidth - 10]);
         
         var svg = d3.select("#electoral-vote").select('svg');
 
+        var bias = 0;
+        var width = this.svgWidth - 20;
         svg.selectAll('rect')
            .data(data)
            .enter()
-           .append('g')
-           .append('rect');
+           .append('rect')
+           .attr('y', 50)
+           .attr('x', function (d) {
+           		var cur = bias;
+           		bias += xAxis(d.Total_EV)/width;
+           	 	return cur;
+           })
+           .attr('height', 30)
+           .attr('width', d => xAxis(d.Total_EV)/width)
+           .attr('class', 'electoralVotes')
+           .attr('fill', d => colorScale(d.RD_Difference));
         console.log(Gdata, data);
     //Create the stacked bar chart.
     //Use the global color scale to color code the rectangles.
