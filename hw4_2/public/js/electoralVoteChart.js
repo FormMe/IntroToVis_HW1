@@ -99,7 +99,7 @@ class ElectoralVoteChart {
            .attr('width', d => xAxis(d.Total_EV)/width)
            .attr('class', 'electoralVotes')
            .attr('fill', d => colorScale(d.RD_Difference));
-        console.log(Gdata, data);
+
 
 
         var ev = Gdata.map(function (p) {
@@ -109,10 +109,12 @@ class ElectoralVoteChart {
         	}
         })
 
-      svg.selectAll('text')
-         	.data(ev)
-         	.enter()
+      var counts = svg.selectAll('text')
+         	            .data(ev);
+      counts.exit().remove();
+      counts = counts.enter()
          	.append('text')
+          .merge(counts)
          	.attr("dy", "90")
     			.attr("dx", function (d) {				
     				return xAxis(d.ev_count)/width;
