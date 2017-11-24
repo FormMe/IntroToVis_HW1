@@ -21,6 +21,7 @@ class ElectoralVoteChart {
             .attr("width",this.svgWidth)
             .attr("height",this.svgHeight)
 
+        this.treshold = false;
     };
 
     /**
@@ -50,6 +51,7 @@ class ElectoralVoteChart {
 	            return "independent";
 	        }
 	    }
+
           // ******* TODO: PART II *******
           var Gdata = d3.nest()
                 .key(function(d) { return d['State_Winner']; })
@@ -80,10 +82,13 @@ class ElectoralVoteChart {
 
         var bias = 0;
         var width = this.svgWidth - 20;
-        svg.selectAll('rect')
-           .data(data)
-           .enter()
+        var bars = svg.selectAll('rect')
+                      .data(data);
+        bars.exit().remove();
+
+        bars = bars.enter()
            .append('rect')
+           .merge(bars)
            .attr('y', 50)
            .attr('x', function (d) {
            		var cur = bias;
@@ -104,32 +109,36 @@ class ElectoralVoteChart {
         	}
         })
 
-        svg.selectAll('text')
-           	.data(ev)
-           	.enter()
-           	.append('text')
-           	.attr("dy", "90")
-			.attr("dx", function (d) {				
-				return xAxis(d.ev_count)/width;
-			})
-			.attr('class', function (d) {
-				return 'electoralVoteText ' + chooseClass(d.party);
-			})
-			.text(function(d) { return d.ev_count; });
+      svg.selectAll('text')
+         	.data(ev)
+         	.enter()
+         	.append('text')
+         	.attr("dy", "90")
+    			.attr("dx", function (d) {				
+    				return xAxis(d.ev_count)/width;
+    			})
+    			.attr('class', function (d) {
+    				return 'electoralVoteText ' + chooseClass(d.party);
+    			})
+    			.text(function(d) { return d.ev_count; });
 
+      if(!this.treshold){        
+        svg.append('text')
+            .attr("dy", "35")
+            .attr("dx", width/2)  
+            .attr('class', 'electoralVotesNote')
+            .text('Electoral Vote (270 needed to win)');
 
-		svg.append('text')
-			  .attr("dy", "35")
-			  .attr("dx", width/2)	
-			  .attr('class', 'electoralVotesNote')
-			  .text('Electoral Vote (270 needed to win)');
+        svg.append('line')
+            .attr("x1", width/2)
+            .attr("x2", width/2)
+            .attr("y1", 40)
+            .attr("y2", 90)
+            .attr('stroke', 'black');
 
-		svg.append('line')
-          .attr("x1", width/2)
-          .attr("x2", width/2)
-          .attr("y1", 40)
-          .attr("y2", 90)
-          .attr('stroke', 'black');
+        this.treshold = true;
+      }
+
 			  
     //Display total count of electoral votes won by the Democrat and Republican party
     //on top of the corresponding groups of bars.
