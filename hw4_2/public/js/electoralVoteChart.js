@@ -69,10 +69,13 @@ class ElectoralVoteChart {
 
         var data = [];
         Gdata.forEach(function (states) {
-            data = data.concat(states.value);
+          if(states.key == 'I'){
+            data = states.value.concat(data);
+          }
+          else{
+            data = data.concat(states.value);            
+          }
         });
-
-
 
         var xAxis = d3.scaleLinear()
             .rangeRound([10, this.svgWidth - 10]);
@@ -98,7 +101,10 @@ class ElectoralVoteChart {
            .attr('height', 30)
            .attr('width', d => xAxis(d.Total_EV)/width)
            .attr('class', 'electoralVotes')
-           .attr('fill', d => colorScale(d.RD_Difference));
+           .attr('fill', function (d) { 
+           console.log(d);            
+             return d['State_Winner'] != 'I' ? colorScale(d.RD_Difference) : '#45AD6A';
+           });
 
 
 
