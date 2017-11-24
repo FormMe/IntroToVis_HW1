@@ -120,7 +120,7 @@ class ElectoralVoteChart {
       counts = counts.enter()
          	.append('text')
           .merge(counts)
-         	.attr("dy", "95")
+         	.attr("dy", "40")
     			.attr("dx", function (d, i) {			
             if(d.party == 'I') return 0;
             if(i == ev.length - 1){

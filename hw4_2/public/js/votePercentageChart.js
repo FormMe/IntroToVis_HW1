@@ -129,14 +129,55 @@ class VotePercentageChart {
 	           .attr('class', function (d) {
 	           	 return 'votesPercentage ' + chooseClass(d.party)
 	           });
-		    //Create the stacked bar chart.
-		    //Use the global color scale to color code the rectangles.
-		    //HINT: Use .votesPercentage class to style your bars.
 
-		    //Display the total percentage of votes won by each party
-		    //on top of the corresponding groups of bars.
-		    //HINT: Use the .votesPercentageText class to style your text elements;  Use this in combination with
-		    // chooseClass to get a color based on the party wherever necessary
+             var counts = svg.selectAll('.perc')
+ 	            .data(parties);
+			  counts.exit().remove();
+			  counts = counts.enter()
+			     	.append('text')
+			      .merge(counts)
+			     	.attr("dy", "40")
+						.attr("dx", function (d, i) {			
+					        if(d.party == 'I') return 0;
+					        if(i == parties.length - 1){
+					          return width+20;
+					        }
+					        else{
+					          if (parties[i+1].party != 'I')
+					            return 0;
+					          else
+					            return xAxis(parties[i+1].percentage)/width;
+					        }
+						})
+						.attr('class', function (d) {
+							return 'perc votesPercentageText ' + chooseClass(d.party);
+						})
+						.text(function(d) { return d.percentage + '%'; });
+ 
+
+			  var nom = svg.selectAll('.nom')
+				            .data(parties);
+
+			  nom.exit().remove();
+			  nom = nom.enter()
+			     	.append('text')
+			      .merge(nom)
+			     	.attr("dy", "20")
+						.attr("dx", function (d, i) {	
+							console.log(d, i);		
+					        if(i == 0) return 0;
+					        if(i == parties.length - 1){
+					          return width+20;
+					        }
+					        else{
+					            return xAxis(parties[i-1].percentage)/width;
+					        }
+						})
+						.attr('class', function (d) {
+							return 'nom votesPercentageText ' + chooseClass(d.party);
+						})
+						.text(function(d) { return d.nominee; });
+
 
 		    if(!this.treshold){        
 		        svg.append('text')
