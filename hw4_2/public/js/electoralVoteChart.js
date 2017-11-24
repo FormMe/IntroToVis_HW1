@@ -120,7 +120,7 @@ class ElectoralVoteChart {
       counts = counts.enter()
          	.append('text')
           .merge(counts)
-         	.attr("dy", "90")
+         	.attr("dy", "95")
     			.attr("dx", function (d, i) {			
             if(d.party == 'I') return 0;
             if(i == ev.length - 1){
@@ -139,11 +139,6 @@ class ElectoralVoteChart {
     			.text(function(d) { return d.ev_count; });
 
       if(!this.treshold){        
-        svg.append('text')
-            .attr("dy", "35")
-            .attr("dx", width/2)  
-            .attr('class', 'electoralVotesNote')
-            .text('Electoral Vote (270 needed to win)');
 
         svg.append('line')
             .attr("x1", width/2)
@@ -155,6 +150,11 @@ class ElectoralVoteChart {
         this.treshold = true;
       }
 
+        svg.append('text')
+            .attr("dy", "35")
+            .attr("dx", width/2)  
+            .attr('class', 'electoralVotesNote')
+            .text('Electoral Vote (270 needed to win)');
     //******* TODO: PART V *******
     //Implement brush on the bar chart created above.
     //Implement a call back method to handle the brush end event.

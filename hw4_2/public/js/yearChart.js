@@ -71,7 +71,6 @@ class YearChart {
        // ******* TODO: PART I *******
 
        var data = this.electionWinners;
-       var EVchart = this.electoralVoteChart;
        var svg = d3.select('#year-chart')
                    .select('svg');
 
@@ -108,6 +107,7 @@ class YearChart {
             .attr('class', 'yeartext') 
             .text(function(d) { return d.YEAR; });
         
+        var s = this;
         yearAxis.on('click', function (d) {
             yearAxis.selectAll('circle')
                     .classed('selected', false)
@@ -118,7 +118,9 @@ class YearChart {
               .classed('highlighted', true);
 
             d3.csv("data/Year_Timeline_" + d.YEAR + ".csv", function (error, electionResult) {
-              EVchart.update(electionResult, ColorScale);
+              s.electoralVoteChart.update(electionResult, ColorScale);
+              //s.tileChart.update(electionResult);
+              s.votePercentageChart.update(electionResult);
             });
         });
 

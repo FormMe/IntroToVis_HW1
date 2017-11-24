@@ -18,40 +18,12 @@ class VotePercentageChart {
 	        .attr("width",this.svgWidth)
 	        .attr("height",this.svgHeight)
 
+        this.treshold = false;
     }
 
 
-	/**
-	 * Returns the class that needs to be assigned to an element.
-	 *
-	 * @param party an ID for the party that is being referred to.
-	 */
-	chooseClass(data) {
-	    if (data == "R"){
-	        return "republican";
-	    }
-	    else if (data == "D"){
-	        return "democrat";
-	    }
-	    else if (data == "I"){
-	        return "independent";
-	    }
-	}
-
-	/**
-	 * Renders the HTML content for tool tip
-	 *
-	 * @param tooltip_data information that needs to be populated in the tool tip
-	 * @return text HTML content for toop tip
-	 */
-	tooltip_render (tooltip_data) {
-	    let text = "<ul>";
-	    tooltip_data.result.forEach((row)=>{
-	        text += "<li class = " + this.chooseClass(row.party)+ ">" + row.nominee+":\t\t"+row.votecount+"("+row.percentage+"%)" + "</li>"
-	    });
-
-	    return text;
-	}
+	
+	
 
 	/**
 	 * Creates the stacked bar chart, text content and tool tips for Vote Percentage chart
@@ -59,6 +31,36 @@ class VotePercentageChart {
 	 * @param electionResult election data for the year selected
 	 */
 	update (electionResult){
+		/**
+			 * Renders the HTML content for tool tip
+			 *
+			 * @param tooltip_data information that needs to be populated in the tool tip
+			 * @return text HTML content for toop tip
+			 */
+			function tooltip_render (tooltip_data) {
+			    let text = "<ul>";
+			    tooltip_data.result.forEach((row)=>{
+			        text += "<li class = " + this.chooseClass(row.party)+ ">" + row.nominee+":\t\t"+row.votecount+"("+row.percentage+"%)" + "</li>"
+			    });
+
+			    return text;
+			}
+					/**
+			 * Returns the class that needs to be assigned to an element.
+			 *
+			 * @param party an ID for the party that is being referred to.
+			 */
+			function chooseClass(data) {
+			    if (data == "R"){
+			        return "republican";
+			    }
+			    else if (data == "D"){
+			        return "democrat";
+			    }
+			    else if (data == "I"){
+			        return "independent";
+			    }
+			}
 
 	        //for reference:https://github.com/Caged/d3-tip
 	        //Use this tool tip element to handle any hover over the chart
@@ -82,9 +84,51 @@ class VotePercentageChart {
 	                return;
 	            });
 
-
+	            console.log(electionResult);
    			  // ******* TODO: PART III *******
 
+
+   			 var parties = ['I', 'D', 'R']
+   			 parties = parties.map(function (party) {
+   			 			var perc = party + '_PopularPercentage';
+   			 			var nominee = party + '_Nominee';
+   			 			var votes = party + '_Votes_Total';
+		   			 	return {
+		   			 				'party': party,
+		                            'percentage':  parseFloat(electionResult[0][perc].replace('%','')), 
+		                            'nominee': electionResult[0][nominee], 
+		                            'votes_total': electionResult[0][votes]
+		                        }
+   			 });
+   			 if(parties[0].nominee == "")
+   			 	parties.splice(0,1);
+
+	        var xAxis = d3.scaleLinear()
+	            .rangeRound([10, this.svgWidth - 10]);
+
+        	var svg = d3.select("#votes-percentage").select('svg');
+
+	        var bias = 0;
+	        var width = this.svgWidth - 20;
+
+	        var bars = svg.selectAll('rect')
+	                      .data(parties);
+	        bars.exit().remove();
+
+	        bars = bars.enter()
+	           .append('rect')
+	           .merge(bars)
+	           .attr('y', 50)
+	           .attr('x', function (d) {
+	           		var cur = bias;
+	           		bias += xAxis(d.percentage)/width*5.5;
+	           	 	return cur;
+	           })
+	           .attr('height', 30)
+	           .attr('width', d =>  xAxis(d.percentage)/width*5.5)
+	           .attr('class', function (d) {
+	           	 return 'votesPercentage ' + chooseClass(d.party)
+	           });
 		    //Create the stacked bar chart.
 		    //Use the global color scale to color code the rectangles.
 		    //HINT: Use .votesPercentage class to style your bars.
@@ -94,11 +138,22 @@ class VotePercentageChart {
 		    //HINT: Use the .votesPercentageText class to style your text elements;  Use this in combination with
 		    // chooseClass to get a color based on the party wherever necessary
 
-		    //Display a bar with minimal width in the center of the bar chart to indicate the 50% mark
-		    //HINT: Use .middlePoint class to style this bar.
+		    if(!this.treshold){        
+		        svg.append('text')
+		            .attr("dy", "35")
+		            .attr("dx", width/2)  
+		            .attr('class', 'votesPercentageNote')
+		            .text('Popular Vote (50%)');
 
-		    //Just above this, display the text mentioning details about this mark on top of this bar
-		    //HINT: Use .votesPercentageNote class to style this text element
+		        svg.append('line')
+		            .attr("x1", width/2)
+		            .attr("x2", width/2)
+		            .attr("y1", 40)
+		            .attr("y2", 90)
+		            .attr('stroke', 'black');
+
+		        this.treshold = true;
+		      }
 
 		    //Call the tool tip on hover over the bars to display stateName, count of electoral votes.
 		    //then, vote percentage and number of votes won by each party.
