@@ -17,8 +17,15 @@ class ShiftChart {
      console.log(selectedStates);
      // ******* TODO: PART V *******
     var shift = d3.select('#shiftChart')
-                  .data(selectedStates); 
+                  .selectAll('li')
+                  .data(selectedStates);
 
+    shift.exit().remove();
+
+    shift = shift.enter()
+                 .append('li')
+                 .merge(shift)
+                 .text(d => d.State);
     //******** TODO: PART VI*******
     //Use the shift data corresponding to the selected years and sketch a visualization
     //that encodes the shift information
