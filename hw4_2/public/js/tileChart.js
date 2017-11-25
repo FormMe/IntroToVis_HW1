@@ -61,12 +61,12 @@ class TileChart {
              * @return text HTML content for tool tip
              */
             function tooltip_render(tooltip_data) {
-                let text = "<h2 class ="  + this.chooseClass(tooltip_data.winner) + " >" + tooltip_data.state + "</h2>";
+                let text = "<h2 class ="  + chooseClass(tooltip_data.winner) + " >" + tooltip_data.state + "</h2>";
                 text +=  "Electoral Votes: " + tooltip_data.electoralVotes;
                 text += "<ul>"
                 tooltip_data.result.forEach((row)=>{
                     //text += "<li>" + row.nominee+":\t\t"+row.votecount+"("+row.percentage+"%)" + "</li>"
-                    text += "<li class = " + this.chooseClass(row.party)+ ">" + row.nominee+":\t\t"+row.votecount+"("+row.percentage+"%)" + "</li>"
+                    text += "<li class = " + chooseClass(row.party)+ ">" + row.nominee+":\t\t"+row.votecount+"("+row.percentage+"%)" + "</li>"
                 });
                 text += "</ul>";
 
@@ -87,8 +87,9 @@ class TileChart {
                 .attr("class", "legendQuantile")
                 .attr("transform", "translate(0,50)");
 
+            var w = this.svgWidth*0.8 / 10;
             let legendQuantile = d3.legendColor()
-                .shapeWidth(60)
+                .shapeWidth(w)
                 .cells(10)
                 .orient('horizontal')
                 .scale(colorScale);
@@ -105,64 +106,66 @@ class TileChart {
                     return [0,0];
                 })
                 .html((d)=>{
-                    /* populate data in the following format
-                     * tooltip_data = {
-                     * "state": State,
-                     * "winner":d.State_Winner
-                     * "electoralVotes" : Total_EV
-                     * "result":[
-                     * {"nominee": D_Nominee_prop,"votecount": D_Votes,"percentage": D_Percentage,"party":"D"} ,
-                     * {"nominee": R_Nominee_prop,"votecount": R_Votes,"percentage": R_Percentage,"party":"R"} ,
-                     * {"nominee": I_Nominee_prop,"votecount": I_Votes,"percentage": I_Percentage,"party":"I"}
-                     * ]
-                     * }
-                     * pass this as an argument to the tooltip_render function then,
-                     * return the HTML content returned from that method.
-                     * */
-                    return ;
+                     var tooltip_data = {
+                         "state": d.State,
+                         "winner": d.State_Winner,
+                         "electoralVotes" : d.Total_EV,
+                         "result":[
+                                     {"nominee": d.D_Nominee_prop,"votecount": d.D_Votes,"percentage": d.D_Percentage,"party":"D"} ,
+                                     {"nominee": d.R_Nominee_prop,"votecount": d.R_Votes,"percentage": d.R_Percentage,"party":"R"} ,
+                                     {"nominee": d.I_Nominee_prop,"votecount": d.I_Votes,"percentage": d.I_Percentage,"party":"I"}
+                                  ]
+                     }
+                    return tooltip_render(tooltip_data);
                 });
 
             // ******* TODO: PART IV *******
             
             var svg = d3.select('#tiles').select('svg');
+            svg.call(tip);            
+
             var tileWidth = this.svgWidth / (this.maxColumns+1);
             var tileHeight = this.svgHeight / (this.maxRows+1);
 
-            var tiles = svg.selectAll('.tile')
+            var tiles = svg.selectAll('g')
                             .data(electionResult);
 
             tiles.exit().remove();
+            var tilesEnter = tiles.enter();
+            var tilesG = tilesEnter.append('g');
 
-            tiles = tiles.enter()
-                         .append('g')
-                         .merge(tiles)
-                         .attr('class', function (d) {
-                             return 'tile';
-                         });
+            tilesG.append('rect');
+            tilesG.append('text').attr('class', 'state');
+            tilesG.append('text').attr('class', 'ev');
 
-            var bars = tiles.append('rect')
-                            .attr('fill', d => colorScale(d['RD_Difference']))
-                            .attr('y', d => d["Row"] * tileHeight)
-                            .attr('x', d => d["Space"] * tileWidth)
-                            .attr('width', tileWidth)
-                            .attr('height', tileHeight);
+            tiles = tilesEnter.merge(tiles);
 
-            var name_text = tiles.append('text')
-                                .classed('tilestext', true)
-                                .attr("dy", d => d["Row"] * tileHeight + tileHeight*0.4)
-                                .attr("dx", d => d["Space"] * tileWidth + tileWidth/2)
-                                .text(d => d.Abbreviation);
+           /* tiles.on('mouseover', tip.show)
+                 .on('mouseout', tip.hide);*/
+                 
+            tiles.select('rect')
+                 .attr('fill', function (d) { 
+                         return d['State_Winner'] != 'I' ? colorScale(d.RD_Difference) : '#45AD6A';
+                   })
+                .attr('class', 'tile')
+                .attr('y', d => d["Row"] * tileHeight)
+                .attr('x', d => d["Space"] * tileWidth)
+                .attr('width', tileWidth)
+                .attr('height', tileHeight);
 
-            var name_text = tiles.append('text')
-                                .classed('tilestext', true)
-                                .attr("dy", d => d["Row"] * tileHeight + tileHeight*0.8)
-                                .attr("dx", d => d["Space"] * tileWidth + tileWidth/2)
-                                .text(d => d.Total_EV);
+            tiles.select('state')
+                .attr('class', 'tilestext')
+                .attr("dy", d => d["Row"] * tileHeight + tileHeight*0.4)
+                .attr("dx", d => d["Space"] * tileWidth + tileWidth/2)
+                .text(d => d.Abbreviation);
 
-            //Display the state abbreviation and number of electoral votes on each of these rectangles
+            tiles.select('ev')
+                .attr('class', 'tilestext')
+                .attr("dy", d => d["Row"] * tileHeight + tileHeight*0.8)
+                .attr("dx", d => d["Space"] * tileWidth + tileWidth/2)
+                .text(d => d.Total_EV);
 
-            //HINT: Use .tile class to style your tiles;
-            // .tilestext to style the text corresponding to tiles
+
 
             //Call the tool tip on hover over the tiles to display stateName, count of electoral votes
             //then, vote percentage and number of votes won by each party.

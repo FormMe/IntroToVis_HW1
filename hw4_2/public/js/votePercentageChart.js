@@ -69,7 +69,7 @@ class VotePercentageChart {
    			 var parties = ['I', 'D', 'R']
    			 parties = parties.map(function (party) {
    			 			var perc = party + '_PopularPercentage';
-   			 			var nominee = party + '_Nominee';
+   			 			var nominee = party + '_Nominee_prop';
    			 			var votes = party + '_Votes_Total';
 		   			 	return {
 		   			 				'party': party,
@@ -78,9 +78,9 @@ class VotePercentageChart {
 		                            'votecount': electionResult[0][votes]
 		                        }
    			 });
-   			 if(parties[0].nominee == "")
+   			 if(parties[0].nominee == " ")
    			 	parties.splice(0,1);
-
+   			 
 			let tip = d3.tip().attr('class', 'd3-tip')
 			            .direction('s')
 			            .offset(function() {
