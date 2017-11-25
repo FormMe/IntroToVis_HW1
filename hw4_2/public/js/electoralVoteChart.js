@@ -155,7 +155,16 @@ class ElectoralVoteChart {
             .attr("dx", width/2)  
             .attr('class', 'electoralVotesNote')
             .text('Electoral Vote ('+half+' needed to win)');
+
     //******* TODO: PART V *******
+
+    function brushed() {
+      // body...
+    }
+    var brush = d3.brushX().extent([[0,40],[this.svgWidth, 90]]).on("end", brushed);
+    svg.append("g").attr("class", "brush").call(brush);
+
+
     //Implement brush on the bar chart created above.
     //Implement a call back method to handle the brush end event.
     //Call the update method of shiftChart and pass the data corresponding to brush selection.

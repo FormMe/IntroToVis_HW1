@@ -11,7 +11,7 @@ class VotePercentageChart {
 	    //fetch the svg bounds
 	    this.svgBounds = divvotesPercentage.node().getBoundingClientRect();
 	    this.svgWidth = this.svgBounds.width - this.margin.left - this.margin.right;
-	    this.svgHeight = 200;
+	    this.svgHeight = 130;
 
 	    //add the svg to the div
 	    this.svg = divvotesPercentage.append("svg")
@@ -20,10 +20,6 @@ class VotePercentageChart {
 
         this.treshold = false;
     }
-
-
-	
-	
 
 	/**
 	 * Creates the stacked bar chart, text content and tool tips for Vote Percentage chart
@@ -80,7 +76,7 @@ class VotePercentageChart {
    			 });
    			 if(parties[0].nominee == " ")
    			 	parties.splice(0,1);
-   			 
+
 			let tip = d3.tip().attr('class', 'd3-tip')
 			            .direction('s')
 			            .offset(function() {
@@ -180,10 +176,5 @@ class VotePercentageChart {
 
 		        this.treshold = true;
 		      }
-
-		    //Call the tool tip on hover over the bars to display stateName, count of electoral votes.
-		    //then, vote percentage and number of votes won by each party.
 	};
-
-
 }
