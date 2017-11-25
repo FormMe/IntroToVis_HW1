@@ -134,22 +134,32 @@ class TileChart {
             tiles.exit().remove();
 
             tiles = tiles.enter()
-                         .append('rect')
+                         .append('g')
                          .merge(tiles)
                          .attr('class', function (d) {
                              return 'tile';
-                         })
-                         .attr('fill', d => colorScale(d['RD_Difference']))
-                         .attr('y', d => d["Row"] * tileHeight)
-                         .attr('x', d => d["Space"] * tileWidth)
-                         .attr('width', tileWidth)
-                         .attr('height', tileHeight);
+                         });
 
-            //Lay rectangles corresponding to each state according to the 'row' and 'column' information in the data.
+            var bars = tiles.append('rect')
+                            .attr('fill', d => colorScale(d['RD_Difference']))
+                            .attr('y', d => d["Row"] * tileHeight)
+                            .attr('x', d => d["Space"] * tileWidth)
+                            .attr('width', tileWidth)
+                            .attr('height', tileHeight);
+
+            var name_text = tiles.append('text')
+                                .classed('tilestext', true)
+                                .attr("dy", d => d["Row"] * tileHeight + tileHeight*0.4)
+                                .attr("dx", d => d["Space"] * tileWidth + tileWidth/2)
+                                .text(d => d.Abbreviation);
+
+            var name_text = tiles.append('text')
+                                .classed('tilestext', true)
+                                .attr("dy", d => d["Row"] * tileHeight + tileHeight*0.8)
+                                .attr("dx", d => d["Space"] * tileWidth + tileWidth/2)
+                                .text(d => d.Total_EV);
 
             //Display the state abbreviation and number of electoral votes on each of these rectangles
-
-            //Use global color scale to color code the tiles.
 
             //HINT: Use .tile class to style your tiles;
             // .tilestext to style the text corresponding to tiles

@@ -32,8 +32,9 @@ h1 {
     text-anchor:middle;
     font-size: 16px;
     fill: #565656;
+    color: #565656;
     stroke-width: 0.1px;
-    /*stroke: #e5e5e5;*/
+    stroke: #e5e5e5;
 }
 
 .electoralVotesNote, .votesPercentageNote{
