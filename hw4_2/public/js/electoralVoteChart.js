@@ -58,6 +58,7 @@ class ElectoralVoteChart {
                 .rollup(function(v) { 
                     return v.map(function (state) {
                         return {
+                                'State' : state['State'],
                                 'State_Winner': state['State_Winner'],
                                 'Total_EV': state['Total_EV'],
                                 'RD_Difference': state['RD_Difference']
@@ -157,19 +158,21 @@ class ElectoralVoteChart {
             .text('Electoral Vote ('+half+' needed to win)');
 
     //******* TODO: PART V *******
-
-    function brushed() {
-      // body...
-    }
-    var brush = d3.brushX().extent([[0,40],[this.svgWidth, 90]]).on("end", brushed);
-    svg.append("g").attr("class", "brush").call(brush);
-
-
-    //Implement brush on the bar chart created above.
-    //Implement a call back method to handle the brush end event.
-    //Call the update method of shiftChart and pass the data corresponding to brush selection.
-    //HINT: Use the .brush class to style the brush.
-
+      var shiftChart = this.shiftChart;
+      function brushed() {
+        var s = d3.event.selection;
+        var selectedData = []
+        if (s != null) {
+            selectedData = bars.filter(function (d) {
+                                  var x = d3.select(this).attr('x');
+                                  return x >= s[0] && x <= s[1];
+                                })._groups[0]
+                                .map(d => d.__data__);
+        }
+        shiftChart.update(selectedData);  
+      }
+      var brush = d3.brushX().extent([[0,40],[this.svgWidth, 90]]).on("end", brushed);
+      svg.append("g").attr("class", "brush").call(brush);
 
     };
 
