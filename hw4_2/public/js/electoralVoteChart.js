@@ -149,11 +149,12 @@ class ElectoralVoteChart {
         this.treshold = true;
       }
 
+      var half = Math.ceil(sum / 2) + 1
         svg.append('text')
             .attr("dy", "35")
             .attr("dx", width/2)  
             .attr('class', 'electoralVotesNote')
-            .text('Electoral Vote (270 needed to win)');
+            .text('Electoral Vote ('+half+' needed to win)');
     //******* TODO: PART V *******
     //Implement brush on the bar chart created above.
     //Implement a call back method to handle the brush end event.

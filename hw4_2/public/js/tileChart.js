@@ -168,26 +168,7 @@ class TileChart {
                     .attr("dx", d => d["Space"] * tileWidth + tileWidth/2)
                     .text(d => d.Total_EV)
                     .on('mouseover', tip.show)
-                    .on('mouseout', tip.hide);
-
-
-           /* tiles*/
-                 
-            tiles.select('rect')
-                 ;
-
-            tiles.select('.state')
-                ;
-
-            tiles.select('.ev')
-                ;
-
-
-
-            //Call the tool tip on hover over the tiles to display stateName, count of electoral votes
-            //then, vote percentage and number of votes won by each party.
-            //HINT: Use the .republican, .democrat and .independent classes to style your elements.
-    
+                    .on('mouseout', tip.hide);    
     };
 
 
