@@ -127,43 +127,60 @@ class TileChart {
             var tileWidth = this.svgWidth / (this.maxColumns+1);
             var tileHeight = this.svgHeight / (this.maxRows+1);
 
-            var tiles = svg.selectAll('g')
+            var tiles = svg.selectAll('rect')
                             .data(electionResult);
-
             tiles.exit().remove();
-            var tilesEnter = tiles.enter();
-            var tilesG = tilesEnter.append('g');
+            var tiles = tiles.enter()
+                    .append('rect')
+                    .merge(tiles)
+                    .attr('fill', function (d) { 
+                         return d['State_Winner'] != 'I' ? colorScale(d.RD_Difference) : '#45AD6A';
+                    })
+                    .attr('class', 'tile')
+                    .attr('y', d => d["Row"] * tileHeight)
+                    .attr('x', d => d["Space"] * tileWidth)
+                    .attr('width', tileWidth)
+                    .attr('height', tileHeight)
+                    .on('mouseover', tip.show)
+                    .on('mouseout', tip.hide);
 
-            tilesG.append('rect');
-            tilesG.append('text').attr('class', 'state');
-            tilesG.append('text').attr('class', 'ev');
+            var state_text = svg.selectAll('.state')
+                            .data(electionResult);
+            state_text.exit().remove();
+            var state_text = state_text.enter()
+                    .append('text')
+                    .merge(state_text)
+                    .attr('class', 'state tilestext')
+                    .attr("dy", d => d["Row"] * tileHeight + tileHeight*0.4)
+                    .attr("dx", d => d["Space"] * tileWidth + tileWidth/2)
+                    .text(d => d.Abbreviation)
+                    .on('mouseover', tip.show)
+                    .on('mouseout', tip.hide);
 
-            tiles = tilesEnter.merge(tiles);
+            var ev_text = svg.selectAll('.ev')
+                            .data(electionResult);
+            ev_text.exit().remove();
+            var ev_text = ev_text.enter()
+                    .append('text')
+                    .merge(ev_text)
+                    .attr('class', 'ev tilestext')
+                    .attr("dy", d => d["Row"] * tileHeight + tileHeight*0.8)
+                    .attr("dx", d => d["Space"] * tileWidth + tileWidth/2)
+                    .text(d => d.Total_EV)
+                    .on('mouseover', tip.show)
+                    .on('mouseout', tip.hide);
 
-           /* tiles.on('mouseover', tip.show)
-                 .on('mouseout', tip.hide);*/
+
+           /* tiles*/
                  
             tiles.select('rect')
-                 .attr('fill', function (d) { 
-                         return d['State_Winner'] != 'I' ? colorScale(d.RD_Difference) : '#45AD6A';
-                   })
-                .attr('class', 'tile')
-                .attr('y', d => d["Row"] * tileHeight)
-                .attr('x', d => d["Space"] * tileWidth)
-                .attr('width', tileWidth)
-                .attr('height', tileHeight);
+                 ;
 
-            tiles.select('state')
-                .attr('class', 'tilestext')
-                .attr("dy", d => d["Row"] * tileHeight + tileHeight*0.4)
-                .attr("dx", d => d["Space"] * tileWidth + tileWidth/2)
-                .text(d => d.Abbreviation);
+            tiles.select('.state')
+                ;
 
-            tiles.select('ev')
-                .attr('class', 'tilestext')
-                .attr("dy", d => d["Row"] * tileHeight + tileHeight*0.8)
-                .attr("dx", d => d["Space"] * tileWidth + tileWidth/2)
-                .text(d => d.Total_EV);
+            tiles.select('.ev')
+                ;
 
 
 
