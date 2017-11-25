@@ -165,6 +165,7 @@ class ElectoralVoteChart {
         if (s != null) {
             selectedData = bars.filter(function (d) {
                                   var x = d3.select(this).attr('x');
+                                  var y = d3.select(this).attr('y');
                                   return x >= s[0] && x <= s[1];
                                 })._groups[0]
                                 .map(d => d.__data__);
