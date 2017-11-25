@@ -28,41 +28,7 @@ class TileChart {
                             .attr("transform", "translate(" + this.margin.left + ",0)")
     };
 
-    /**
-     * Returns the class that needs to be assigned to an element.
-     *
-     * @param party an ID for the party that is being referred to.
-     */
-    chooseClass (party) {
-        if (party == "R"){
-            return "republican";
-        }
-        else if (party== "D"){
-            return "democrat";
-        }
-        else if (party == "I"){
-            return "independent";
-        }
-    }
-
-    /**
-     * Renders the HTML content for tool tip.
-     *
-     * @param tooltip_data information that needs to be populated in the tool tip
-     * @return text HTML content for tool tip
-     */
-    tooltip_render(tooltip_data) {
-        let text = "<h2 class ="  + this.chooseClass(tooltip_data.winner) + " >" + tooltip_data.state + "</h2>";
-        text +=  "Electoral Votes: " + tooltip_data.electoralVotes;
-        text += "<ul>"
-        tooltip_data.result.forEach((row)=>{
-            //text += "<li>" + row.nominee+":\t\t"+row.votecount+"("+row.percentage+"%)" + "</li>"
-            text += "<li class = " + this.chooseClass(row.party)+ ">" + row.nominee+":\t\t"+row.votecount+"("+row.percentage+"%)" + "</li>"
-        });
-        text += "</ul>";
-
-        return text;
-    }
+    
 
     /**
      * Creates tiles and tool tip for each state, legend for encoding the color scale information.
@@ -71,7 +37,41 @@ class TileChart {
      * @param colorScale global quantile scale based on the winning margin between republicans and democrats
      */
     update (electionResult, colorScale){
+            /**
+             * Returns the class that needs to be assigned to an element.
+             *
+             * @param party an ID for the party that is being referred to.
+             */
+            function chooseClass (party) {
+                if (party == "R"){
+                    return "republican";
+                }
+                else if (party== "D"){
+                    return "democrat";
+                }
+                else if (party == "I"){
+                    return "independent";
+                }
+            }
 
+            /**
+             * Renders the HTML content for tool tip.
+             *
+             * @param tooltip_data information that needs to be populated in the tool tip
+             * @return text HTML content for tool tip
+             */
+            function tooltip_render(tooltip_data) {
+                let text = "<h2 class ="  + this.chooseClass(tooltip_data.winner) + " >" + tooltip_data.state + "</h2>";
+                text +=  "Electoral Votes: " + tooltip_data.electoralVotes;
+                text += "<ul>"
+                tooltip_data.result.forEach((row)=>{
+                    //text += "<li>" + row.nominee+":\t\t"+row.votecount+"("+row.percentage+"%)" + "</li>"
+                    text += "<li class = " + this.chooseClass(row.party)+ ">" + row.nominee+":\t\t"+row.votecount+"("+row.percentage+"%)" + "</li>"
+                });
+                text += "</ul>";
+
+                return text;
+            }   
             //Calculates the maximum number of columns to be laid out on the svg
             this.maxColumns = d3.max(electionResult,function(d){
                                     return parseInt(d["Space"]);
@@ -88,12 +88,13 @@ class TileChart {
                 .attr("transform", "translate(0,50)");
 
             let legendQuantile = d3.legendColor()
-                .shapeWidth(100)
+                .shapeWidth(60)
                 .cells(10)
                 .orient('horizontal')
                 .scale(colorScale);
 
             this.legendSvg.select(".legendQuantile")
+                .style("font-size","10px")
                 .call(legendQuantile);
 
         //for reference:https://github.com/Caged/d3-tip
@@ -122,7 +123,27 @@ class TileChart {
                 });
 
             // ******* TODO: PART IV *******
-            //Tansform the legend element to appear in the center and make a call to this element for it to display.
+            
+            var svg = d3.select('#tiles').select('svg');
+            var tileWidth = this.svgWidth / (this.maxColumns+1);
+            var tileHeight = this.svgHeight / (this.maxRows+1);
+
+            var tiles = svg.selectAll('.tile')
+                            .data(electionResult);
+
+            tiles.exit().remove();
+
+            tiles = tiles.enter()
+                         .append('rect')
+                         .merge(tiles)
+                         .attr('class', function (d) {
+                             return 'tile';
+                         })
+                         .attr('fill', d => colorScale(d['RD_Difference']))
+                         .attr('y', d => d["Row"] * tileHeight)
+                         .attr('x', d => d["Space"] * tileWidth)
+                         .attr('width', tileWidth)
+                         .attr('height', tileHeight);
 
             //Lay rectangles corresponding to each state according to the 'row' and 'column' information in the data.
 

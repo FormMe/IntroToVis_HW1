@@ -54,7 +54,6 @@ class VotePercentageChart {
 			 * @return text HTML content for toop tip
 			 */
 			function tooltip_render (tooltip_data) {
-			    console.log(tooltip_data);
 			    let text = "<ul>";
 			    tooltip_data.forEach((row)=>{
 			        text += "<li class = " + chooseClass(row.party)+ ">" + row.nominee+":\t\t"+row.votecount+"("+row.percentage+"%)" + "</li>"

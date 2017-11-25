@@ -119,7 +119,7 @@ class YearChart {
 
             d3.csv("data/Year_Timeline_" + d.YEAR + ".csv", function (error, electionResult) {
               s.electoralVoteChart.update(electionResult, ColorScale);
-              //s.tileChart.update(electionResult);
+              s.tileChart.update(electionResult, ColorScale);
               s.votePercentageChart.update(electionResult);
             });
         });
