@@ -32,20 +32,6 @@ class VotePercentageChart {
 	 */
 	update (electionResult){
 		/**
-			 * Renders the HTML content for tool tip
-			 *
-			 * @param tooltip_data information that needs to be populated in the tool tip
-			 * @return text HTML content for toop tip
-			 */
-			function tooltip_render (tooltip_data) {
-			    let text = "<ul>";
-			    tooltip_data.result.forEach((row)=>{
-			        text += "<li class = " + this.chooseClass(row.party)+ ">" + row.nominee+":\t\t"+row.votecount+"("+row.percentage+"%)" + "</li>"
-			    });
-
-			    return text;
-			}
-					/**
 			 * Returns the class that needs to be assigned to an element.
 			 *
 			 * @param party an ID for the party that is being referred to.
@@ -61,30 +47,23 @@ class VotePercentageChart {
 			        return "independent";
 			    }
 			}
+		/**
+			 * Renders the HTML content for tool tip
+			 *
+			 * @param tooltip_data information that needs to be populated in the tool tip
+			 * @return text HTML content for toop tip
+			 */
+			function tooltip_render (tooltip_data) {
+			    console.log(tooltip_data);
+			    let text = "<ul>";
+			    tooltip_data.forEach((row)=>{
+			        text += "<li class = " + chooseClass(row.party)+ ">" + row.nominee+":\t\t"+row.votecount+"("+row.percentage+"%)" + "</li>"
+			    });
 
-	        //for reference:https://github.com/Caged/d3-tip
-	        //Use this tool tip element to handle any hover over the chart
-	        let tip = d3.tip().attr('class', 'd3-tip')
-	            .direction('s')
-	            .offset(function() {
-	                return [0,0];
-	            })
-	            .html((d)=> {
-	                /* populate data in the following format
-	                 * tooltip_data = {
-	                 * "result":[
-	                 * {"nominee": D_Nominee_prop,"votecount": D_Votes_Total,"percentage": D_PopularPercentage,"party":"D"} ,
-	                 * {"nominee": R_Nominee_prop,"votecount": R_Votes_Total,"percentage": R_PopularPercentage,"party":"R"} ,
-	                 * {"nominee": I_Nominee_prop,"votecount": I_Votes_Total,"percentage": I_PopularPercentage,"party":"I"}
-	                 * ]
-	                 * }
-	                 * pass this as an argument to the tooltip_render function then,
-	                 * return the HTML content returned from that method.
-	                 * */
-	                return;
-	            });
+			    return text;
+			}
+					
 
-	            console.log(electionResult);
    			  // ******* TODO: PART III *******
 
 
@@ -97,13 +76,24 @@ class VotePercentageChart {
 		   			 				'party': party,
 		                            'percentage':  parseFloat(electionResult[0][perc].replace('%','')), 
 		                            'nominee': electionResult[0][nominee], 
-		                            'votes_total': electionResult[0][votes]
+		                            'votecount': electionResult[0][votes]
 		                        }
    			 });
    			 if(parties[0].nominee == "")
    			 	parties.splice(0,1);
 
+			let tip = d3.tip().attr('class', 'd3-tip')
+			            .direction('s')
+			            .offset(function() {
+			                return [0,0];
+			            })
+			            .html((d)=> {
+			                return tooltip_render(parties);
+			            });
+
         	var svg = d3.select("#votes-percentage").select('svg');
+
+			svg.call(tip);
 
         	var sum = d3.sum(parties, d => d['percentage']);
 	        var width = this.svgWidth - 20;
@@ -126,7 +116,9 @@ class VotePercentageChart {
 	           .attr('width', d =>  d.percentage * width / sum)
 	           .attr('class', function (d) {
 	           	 return 'votesPercentage ' + chooseClass(d.party)
-	           });
+	           })
+	           .on('mouseover', tip.show)
+      		   .on('mouseout', tip.hide);
 
              var counts = svg.selectAll('.perc')
  	            .data(parties);
@@ -159,7 +151,6 @@ class VotePercentageChart {
 			      .merge(nom)
 			     	.attr("dy", "20")
 						.attr("dx", function (d, i) {	
-							console.log(d, i);		
 					        if(i == 0) return 0;
 					        if(i == parties.length - 1){
 					          return width;
@@ -193,9 +184,6 @@ class VotePercentageChart {
 
 		    //Call the tool tip on hover over the bars to display stateName, count of electoral votes.
 		    //then, vote percentage and number of votes won by each party.
-
-		    //HINT: Use the chooseClass method to style your elements based on party wherever necessary.
-
 	};
 
 
